@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>寒武纪 · 冲破 10000 元</title>
+<style>
+  :root {
+    --bull-red: #ff2d4a;
+    --bull-red-glow: #ff5566;
+    --gold: #ffd24c;
+    --gold-glow: #ffe680;
+    --bg-0: #04060f;
+    --bg-1: #0a0f24;
+    --bg-2: #15193a;
+    --text: #f5f7ff;
+    --muted: #9aa3c7;
+    --grid: rgba(255,255,255,0.06);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: radial-gradient(ellipse at 50% 0%, var(--bg-2) 0%, var(--bg-1) 35%, var(--bg-0) 80%);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+    user-select: none;
+  }
+
+  /* ===== Background layers ===== */
+  .stars, .gridbg, .scan, .vignette {
+    position: fixed; inset: 0; pointer-events: none;
+  }
+  .stars { z-index: 0; }
+  .gridbg {
+    z-index: 1;
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 80%);
+    -webkit-mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 80%);
+    animation: gridShift 20s linear infinite;
+  }
+  @keyframes gridShift {
+    from { background-position: 0 0, 0 0; }
+    to   { background-position: 60px 60px, 60px 60px; }
+  }
+  .scan {
+    z-index: 2;
+    background:
+      repeating-linear-gradient(0deg, rgba(255,255,255,0.012) 0 1px, transparent 1px 3px);
+    mix-blend-mode: overlay;
+  }
+  .vignette {
+    z-index: 8;
+    background: radial-gradient(ellipse at center, rgba(0,0,0,0) 55%, rgba(0,0,0,0.7) 100%);
+  }
+
+  /* ===== Canvas layers ===== */
+  canvas#particles, canvas#fireworks {
+    position: fixed; inset: 0; width: 100%; height: 100%;
+    pointer-events: none;
+  }
+  canvas#particles { z-index: 3; }
+  canvas#fireworks { z-index: 6; opacity: 0; transition: opacity .6s ease; }
+  canvas#fireworks.show { opacity: 1; }
+
+  /* ===== Stage ===== */
+  .stage {
+    position: relative;
+    z-index: 5;
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    padding: 28px 48px 24px;
+  }
+
+  /* ===== Header ===== */
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 24px;
+  }
+  .brand {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .brand .tag {
+    font-size: 12px;
+    letter-spacing: 0.4em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+  .brand .name {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: 4px;
+    background: linear-gradient(90deg, #fff, #ffd24c 60%, #ff8a3d);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .brand .code {
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 2px;
+  }
+  .clock {
+    text-align: right;
+    color: var(--muted);
+    font-size: 13px;
+    letter-spacing: 2px;
+  }
+  .clock .market {
+    display: inline-flex; align-items: center; gap: 6px;
+    color: var(--bull-red);
+    font-weight: 700;
+  }
+  .pulse-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--bull-red);
+    box-shadow: 0 0 0 0 rgba(255,45,74,0.7);
+    animation: pulse 1.4s infinite;
+  }
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(255,45,74,0.7); }
+    100% { box-shadow: 0 0 0 16px rgba(255,45,74,0); }
+  }
+
+  /* ===== Main ===== */
+  main {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1.05fr 1fr;
+    gap: 32px;
+    align-items: center;
+    padding-top: 12px;
+  }
+
+  /* Left: price block */
+  .price-block {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    position: relative;
+  }
+  .breakthrough {
+    font-size: 14px;
+    letter-spacing: 8px;
+    color: var(--gold);
+    text-shadow: 0 0 12px rgba(255,210,76,0.4);
+  }
+  .price-line {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .yuan {
+    font-size: 36px;
+    color: var(--bull-red-glow);
+    font-weight: 600;
+  }
+  .price {
+    font-family: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+    font-size: clamp(80px, 11vw, 180px);
+    font-weight: 800;
+    line-height: 1;
+    color: #fff;
+    letter-spacing: -2px;
+    text-shadow:
+      0 0 24px rgba(255,45,74,0.45),
+      0 0 60px rgba(255,45,74,0.25);
+    display: inline-flex;
+    align-items: baseline;
+  }
+  .price .digit-roll {
+    display: inline-block;
+    width: 0.62em;
+    overflow: hidden;
+    height: 1em;
+    vertical-align: top;
+    position: relative;
+  }
+  .price .digit-roll .col {
+    display: flex;
+    flex-direction: column;
+    transition: transform 1.2s cubic-bezier(.2,.7,.2,1);
+  }
+  .price .digit-roll .col span {
+    height: 1em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .price .dot {
+    width: 0.25em;
+    display: inline-flex;
+    justify-content: center;
+  }
+  .change-line {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--bull-red);
+  }
+  .change-line .arrow {
+    display: inline-block;
+    transform: translateY(-1px);
+    filter: drop-shadow(0 0 6px rgba(255,45,74,0.7));
+  }
+  .change-line .pct {
+    background: linear-gradient(180deg, #ff5566, #ff2d4a);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, auto);
+    gap: 28px;
+    margin-top: 6px;
+  }
+  .stat .label {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 2px;
+  }
+  .stat .value {
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+    margin-top: 4px;
+    font-variant-numeric: tabular-nums;
+  }
+  .stat .value.up { color: var(--bull-red); }
+
+  /* Right: chart */
+  .chart-wrap {
+    position: relative;
+    height: 62vh;
+    min-height: 380px;
+    background:
+      linear-gradient(180deg, rgba(255,45,74,0.05), rgba(0,0,0,0)),
+      radial-gradient(ellipse at 50% 100%, rgba(255,45,74,0.1), transparent 70%);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 14px;
+    overflow: hidden;
+    backdrop-filter: blur(2px);
+  }
+  .chart-wrap svg { width: 100%; height: 100%; display: block; }
+  .chart-label {
+    position: absolute;
+    top: 16px; left: 18px;
+    font-size: 12px;
+    letter-spacing: 3px;
+    color: var(--muted);
+  }
+  .chart-label b { color: #fff; letter-spacing: 1px; }
+  .axis-text {
+    fill: var(--muted);
+    font-size: 11px;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+  }
+  .grid-line { stroke: rgba(255,255,255,0.05); stroke-width: 1; }
+  .target-line {
+    stroke: var(--gold);
+    stroke-width: 1.5;
+    stroke-dasharray: 6 6;
+    filter: drop-shadow(0 0 6px rgba(255,210,76,0.6));
+  }
+  .target-label {
+    fill: var(--gold);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+  }
+
+  .price-area {
+    fill: url(#areaGrad);
+    opacity: 0;
+    animation: areaIn 1.4s 1.2s ease forwards;
+  }
+  .price-line-path {
+    fill: none;
+    stroke: url(#lineGrad);
+    stroke-width: 2.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    filter: drop-shadow(0 0 6px rgba(255,45,74,0.5));
+    stroke-dasharray: 2600;
+    stroke-dashoffset: 2600;
+    animation: drawLine 4.2s 0.4s cubic-bezier(.55,.08,.2,1) forwards;
+  }
+  @keyframes drawLine { to { stroke-dashoffset: 0; } }
+  @keyframes areaIn { to { opacity: 1; } }
+
+  .candle { opacity: 0; transform-origin: bottom; animation: candleIn .35s forwards; }
+  @keyframes candleIn { to { opacity: 1; } }
+
+  .breakthrough-glow {
+    fill: var(--gold);
+    opacity: 0;
+    animation: glowDot 1.6s 4.0s ease forwards;
+  }
+  @keyframes glowDot {
+    0% { opacity: 0; r: 0; }
+    50% { opacity: 1; r: 10; }
+    100% { opacity: 0.9; r: 6; }
+  }
+
+  /* ===== Footer ticker ===== */
+  footer {
+    position: relative;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    overflow: hidden;
+    height: 44px;
+  }
+  .ticker {
+    display: flex;
+    gap: 48px;
+    white-space: nowrap;
+    animation: tickerScroll 38s linear infinite;
+    color: var(--muted);
+    font-size: 13px;
+    letter-spacing: 1px;
+  }
+  .ticker .item b { color: #fff; margin-right: 6px; letter-spacing: 2px; }
+  .ticker .up { color: var(--bull-red); }
+  .ticker .down { color: #36d399; }
+  @keyframes tickerScroll {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+
+  /* ===== Breakthrough banner ===== */
+  .banner {
+    position: fixed;
+    inset: 0;
+    z-index: 7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    opacity: 0;
+  }
+  .banner.show { animation: bannerShow 3.8s ease forwards; }
+  @keyframes bannerShow {
+    0%   { opacity: 0; transform: scale(1.05); }
+    10%  { opacity: 1; transform: scale(1); }
+    80%  { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; transform: scale(1.05); }
+  }
+  .banner .ring {
+    position: absolute;
+    width: 80vmin; height: 80vmin;
+    border-radius: 50%;
+    border: 1px solid rgba(255,210,76,0.25);
+    box-shadow: 0 0 80px rgba(255,210,76,0.15) inset;
+    animation: ringExpand 2.4s ease-out infinite;
+  }
+  .banner .ring:nth-child(2) { animation-delay: .6s; }
+  .banner .ring:nth-child(3) { animation-delay: 1.2s; }
+  @keyframes ringExpand {
+    0% { transform: scale(0.4); opacity: 0; }
+    20% { opacity: 1; }
+    100% { transform: scale(1.2); opacity: 0; }
+  }
+  .banner .text {
+    text-align: center;
+    transform: translateY(-4vh);
+  }
+  .banner .small {
+    font-size: 14px;
+    letter-spacing: 12px;
+    color: var(--gold);
+    margin-bottom: 18px;
+    text-shadow: 0 0 12px rgba(255,210,76,0.5);
+  }
+  .banner .big {
+    font-size: clamp(60px, 9vw, 140px);
+    font-weight: 900;
+    letter-spacing: 8px;
+    background: linear-gradient(180deg, #fff 10%, #ffd24c 60%, #ff8a3d 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 0 40px rgba(255,210,76,0.4);
+  }
+  .banner .sub {
+    margin-top: 14px;
+    font-size: 18px;
+    letter-spacing: 6px;
+    color: rgba(255,255,255,0.85);
+  }
+  .banner .sub b { color: var(--bull-red-glow); font-weight: 800; }
+
+  /* ===== Intro overlay ===== */
+  .intro {
+    position: fixed; inset: 0; z-index: 20;
+    background: var(--bg-0);
+    display: flex; align-items: center; justify-content: center;
+    transition: opacity .8s ease;
+  }
+  .intro.hide { opacity: 0; pointer-events: none; }
+  .intro button {
+    background: linear-gradient(135deg, var(--bull-red), #ff6b3d);
+    border: none; color: #fff; font-weight: 800;
+    padding: 14px 36px; font-size: 16px; letter-spacing: 6px;
+    border-radius: 999px; cursor: pointer;
+    box-shadow: 0 8px 30px rgba(255,45,74,0.4);
+    transition: transform .2s ease, box-shadow .2s ease;
+  }
+  .intro button:hover { transform: translateY(-2px); box-shadow: 0 12px 36px rgba(255,45,74,0.55); }
+  .intro .hint {
+    position: absolute; bottom: 32px;
+    color: var(--muted); font-size: 12px; letter-spacing: 4px;
+  }
+  .intro h1 {
+    position: absolute; top: 14vh;
+    text-align: center; width: 100%;
+    font-size: clamp(28px, 4.5vw, 56px);
+    letter-spacing: 14px;
+    background: linear-gradient(90deg, #fff, #ffd24c);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .intro h2 {
+    position: absolute; top: calc(14vh + 70px);
+    text-align: center; width: 100%;
+    font-size: 14px; letter-spacing: 10px;
+    color: var(--muted); font-weight: 400;
+  }
+
+  @media (max-width: 900px) {
+    main { grid-template-columns: 1fr; }
+    .chart-wrap { height: 40vh; }
+    .stage { padding: 18px; }
+    .stats { grid-template-columns: repeat(2, auto); gap: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- background layers -->
+<canvas id="stars" class="stars"></canvas>
+<div class="gridbg"></div>
+<canvas id="particles"></canvas>
+<div class="scan"></div>
+<canvas id="fireworks"></canvas>
+<div class="vignette"></div>
+
+<!-- intro -->
+<div class="intro" id="intro">
+  <h1>寒 武 纪</h1>
+  <h2>CAMBRICON · 688256.SH</h2>
+  <button id="startBtn">点 击 开 始</button>
+  <div class="hint">建议在桌面浏览器全屏体验</div>
+</div>
+
+<!-- main stage -->
+<div class="stage">
+  <header>
+    <div class="brand">
+      <span class="tag">CAMBRICON · 688256</span>
+      <span class="name">寒 武 纪</span>
+      <span class="code">中国 AI 芯片旗舰 · 科创板</span>
+    </div>
+    <div class="clock">
+      <div class="market"><span class="pulse-dot"></span>LIVE · 沪市开盘中</div>
+      <div id="now">--:--:--</div>
+    </div>
+  </header>
+
+  <main>
+    <section class="price-block">
+      <div class="breakthrough">历 史 性 突 破</div>
+      <div class="price-line">
+        <span class="yuan">¥</span>
+        <span class="price" id="price"></span>
+      </div>
+      <div class="change-line">
+        <span class="arrow">▲</span>
+        <span id="delta">+0.00</span>
+        <span class="pct" id="pct">+0.00%</span>
+        <span style="font-size:13px;color:var(--muted);letter-spacing:3px;">较前日收盘</span>
+      </div>
+      <div class="stats">
+        <div class="stat">
+          <div class="label">今 开</div>
+          <div class="value" id="sOpen">9,612.00</div>
+        </div>
+        <div class="stat">
+          <div class="label">最 高</div>
+          <div class="value up" id="sHigh">10,128.88</div>
+        </div>
+        <div class="stat">
+          <div class="label">最 低</div>
+          <div class="value" id="sLow">9,580.50</div>
+        </div>
+        <div class="stat">
+          <div class="label">成 交 额</div>
+          <div class="value" id="sVol">¥ 286.4 亿</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="chart-wrap">
+      <div class="chart-label">日K · <b>2026 · 突破之日</b></div>
+      <svg id="chart" viewBox="0 0 800 500" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="lineGrad" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%"  stop-color="#ffd24c"/>
+            <stop offset="55%" stop-color="#ff5566"/>
+            <stop offset="100%" stop-color="#ff2d4a"/>
+          </linearGradient>
+          <linearGradient id="areaGrad" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%"  stop-color="rgba(255,45,74,0.35)"/>
+            <stop offset="100%" stop-color="rgba(255,45,74,0)"/>
+          </linearGradient>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="2.4" result="b"/>
+            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+
+        <!-- horizontal grid lines + y labels -->
+        <g id="grid"></g>
+
+        <!-- target line at 10000 -->
+        <line class="target-line" x1="0" x2="800" y1="120" y2="120"/>
+        <text class="target-label" x="12" y="112">目标价 ¥ 10,000</text>
+
+        <!-- candles + line + area -->
+        <g id="candles"></g>
+        <path id="area" class="price-area" d=""></path>
+        <path id="line" class="price-line-path" d=""></path>
+
+        <!-- breakthrough marker -->
+        <circle id="hit" class="breakthrough-glow" cx="760" cy="118" r="6" filter="url(#glow)"/>
+      </svg>
+    </section>
+  </main>
+
+  <footer>
+    <div class="ticker" id="ticker"></div>
+  </footer>
+</div>
+
+<!-- breakthrough banner -->
+<div class="banner" id="banner">
+  <div class="ring"></div>
+  <div class="ring"></div>
+  <div class="ring"></div>
+  <div class="text">
+    <div class="small">B R E A K T H R O U G H</div>
+    <div class="big">¥ 10,000</div>
+    <div class="sub">寒武纪 · 历史首次冲破 <b>万元股价</b></div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// Utility
+// ============================================================
+const $ = s => document.querySelector(s);
+const rand = (a, b) => a + Math.random() * (b - a);
+
+// ============================================================
+// Starfield background
+// ============================================================
+(function stars() {
+  const c = document.getElementById('stars');
+  const ctx = c.getContext('2d');
+  let W, H, stars;
+  function resize() {
+    W = c.width = innerWidth * devicePixelRatio;
+    H = c.height = innerHeight * devicePixelRatio;
+    stars = Array.from({ length: 220 }, () => ({
+      x: Math.random() * W, y: Math.random() * H,
+      r: Math.random() * 1.4 + 0.2,
+      a: Math.random() * 0.6 + 0.2,
+      tw: Math.random() * 0.02 + 0.003
+    }));
+  }
+  resize(); addEventListener('resize', resize);
+  let t = 0;
+  (function loop() {
+    t += 0.016;
+    ctx.clearRect(0, 0, W, H);
+    for (const s of stars) {
+      const a = s.a + Math.sin(t * 2 + s.x) * 0.25;
+      ctx.fillStyle = `rgba(180,200,255,${Math.max(0, a)})`;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r * devicePixelRatio, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    requestAnimationFrame(loop);
+  })();
+})();
+
+// ============================================================
+// Rising particles (money / sparks)
+// ============================================================
+(function particles() {
+  const c = document.getElementById('particles');
+  const ctx = c.getContext('2d');
+  let W, H, items = [];
+  function resize() {
+    W = c.width = innerWidth * devicePixelRatio;
+    H = c.height = innerHeight * devicePixelRatio;
+  }
+  resize(); addEventListener('resize', resize);
+
+  function spawn() {
+    items.push({
+      x: Math.random() * W,
+      y: H + 20,
+      vy: -rand(0.6, 2.2) * devicePixelRatio,
+      vx: rand(-0.2, 0.2) * devicePixelRatio,
+      r: rand(1, 3) * devicePixelRatio,
+      a: rand(0.3, 1),
+      hue: Math.random() < 0.7 ? 0 : 45,
+      life: 0,
+      max: rand(300, 700)
+    });
+  }
+  setInterval(spawn, 60);
+
+  (function loop() {
+    ctx.clearRect(0, 0, W, H);
+    for (let i = items.length - 1; i >= 0; i--) {
+      const p = items[i];
+      p.life++; p.x += p.vx; p.y += p.vy;
+      const t = p.life / p.max;
+      const a = p.a * (1 - t);
+      if (t >= 1 || p.y < -20) { items.splice(i, 1); continue; }
+      const color = p.hue === 0
+        ? `rgba(255,80,100,${a})`
+        : `rgba(255,210,76,${a})`;
+      ctx.fillStyle = color;
+      ctx.shadowColor = color;
+      ctx.shadowBlur = 12 * devicePixelRatio;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.shadowBlur = 0;
+    requestAnimationFrame(loop);
+  })();
+})();
+
+// ============================================================
+// Fireworks (on breakthrough)
+// ============================================================
+const Fireworks = (function () {
+  const c = document.getElementById('fireworks');
+  const ctx = c.getContext('2d');
+  let W, H, parts = [], active = false;
+  function resize() {
+    W = c.width = innerWidth * devicePixelRatio;
+    H = c.height = innerHeight * devicePixelRatio;
+  }
+  resize(); addEventListener('resize', resize);
+
+  function burst(x, y, hue) {
+    const n = 90;
+    for (let i = 0; i < n; i++) {
+      const ang = (Math.PI * 2 * i) / n + Math.random() * 0.1;
+      const sp = rand(2, 7) * devicePixelRatio;
+      parts.push({
+        x, y,
+        vx: Math.cos(ang) * sp,
+        vy: Math.sin(ang) * sp,
+        g: 0.06 * devicePixelRatio,
+        life: 0,
+        max: rand(60, 110),
+        hue: hue + rand(-15, 15),
+        r: rand(1.5, 3) * devicePixelRatio
+      });
+    }
+  }
+
+  function loop() {
+    if (!active && parts.length === 0) {
+      ctx.clearRect(0, 0, W, H);
+      requestAnimationFrame(loop);
+      return;
+    }
+    ctx.fillStyle = 'rgba(4,6,15,0.18)';
+    ctx.fillRect(0, 0, W, H);
+    for (let i = parts.length - 1; i >= 0; i--) {
+      const p = parts[i];
+      p.life++; p.vy += p.g;
+      p.x += p.vx; p.y += p.vy;
+      const a = 1 - p.life / p.max;
+      if (a <= 0) { parts.splice(i, 1); continue; }
+      ctx.fillStyle = `hsla(${p.hue}, 100%, 60%, ${a})`;
+      ctx.shadowColor = ctx.fillStyle;
+      ctx.shadowBlur = 16 * devicePixelRatio;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.shadowBlur = 0;
+    requestAnimationFrame(loop);
+  }
+  loop();
+
+  return {
+    start() {
+      active = true;
+      c.classList.add('show');
+      const hues = [0, 15, 45, 350];
+      let i = 0;
+      const id = setInterval(() => {
+        const x = rand(W * 0.15, W * 0.85);
+        const y = rand(H * 0.15, H * 0.55);
+        burst(x, y, hues[i++ % hues.length]);
+      }, 220);
+      // keep firing
+      this._id = id;
+    },
+    stop() {
+      active = false;
+      clearInterval(this._id);
+      setTimeout(() => c.classList.remove('show'), 1000);
+    }
+  };
+})();
+
+// ============================================================
+// Chart generation
+// ============================================================
+function buildChart() {
+  const svg = document.getElementById('chart');
+  const gridG = document.getElementById('grid');
+  const candlesG = document.getElementById('candles');
+  const linePath = document.getElementById('line');
+  const areaPath = document.getElementById('area');
+
+  // y range: 4000 ~ 10500
+  const yMin = 4000, yMax = 10500;
+  const w = 800, h = 500;
+  const toY = v => h - ((v - yMin) / (yMax - yMin)) * (h - 30) - 10;
+
+  // y grid labels
+  const labels = [5000, 6000, 7000, 8000, 9000, 10000];
+  labels.forEach(v => {
+    const y = toY(v);
+    const ln = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    ln.setAttribute('class', 'grid-line');
+    ln.setAttribute('x1', 0); ln.setAttribute('x2', 800);
+    ln.setAttribute('y1', y); ln.setAttribute('y2', y);
+    gridG.appendChild(ln);
+    const tx = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    tx.setAttribute('class', 'axis-text');
+    tx.setAttribute('x', 770); tx.setAttribute('y', y - 4);
+    tx.setAttribute('text-anchor', 'end');
+    tx.textContent = '¥ ' + v.toLocaleString();
+    gridG.appendChild(tx);
+  });
+
+  // synthesize 80 candles: starts ~4200, ends >10000 with strong uptrend & noise
+  const N = 80;
+  const candles = [];
+  let price = 4200;
+  for (let i = 0; i < N; i++) {
+    const trend = 75 + i * 0.6;       // accelerating uptrend
+    const noise = (Math.random() - 0.45) * 240;
+    const open = price;
+    const close = Math.max(3800, price + trend + noise);
+    const high = Math.max(open, close) + Math.random() * 120;
+    const low  = Math.min(open, close) - Math.random() * 120;
+    candles.push({ open, close, high, low });
+    price = close;
+  }
+  // force last candle to break 10000 clearly
+  candles[N - 1].open  = 9612;
+  candles[N - 1].close = 10128.88;
+  candles[N - 1].high  = 10180;
+  candles[N - 1].low   = 9580.5;
+
+  const cw = (w - 40) / N;
+  // draw candles with staggered animation
+  candles.forEach((c, i) => {
+    const x = 20 + i * cw + cw / 2;
+    const up = c.close >= c.open;
+    const color = up ? '#ff2d4a' : '#36d399';
+
+    // wick
+    const wick = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    wick.setAttribute('x1', x); wick.setAttribute('x2', x);
+    wick.setAttribute('y1', toY(c.high)); wick.setAttribute('y2', toY(c.low));
+    wick.setAttribute('stroke', color);
+    wick.setAttribute('stroke-width', 1);
+    wick.setAttribute('class', 'candle');
+    wick.style.animationDelay = (i * 0.03) + 's';
+    candlesG.appendChild(wick);
+
+    // body
+    const yTop = toY(Math.max(c.open, c.close));
+    const yBot = toY(Math.min(c.open, c.close));
+    const body = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    body.setAttribute('x', x - cw * 0.32);
+    body.setAttribute('y', yTop);
+    body.setAttribute('width', cw * 0.64);
+    body.setAttribute('height', Math.max(1, yBot - yTop));
+    body.setAttribute('fill', color);
+    body.setAttribute('opacity', up ? 0.9 : 0.85);
+    body.setAttribute('class', 'candle');
+    body.style.animationDelay = (i * 0.03) + 's';
+    candlesG.appendChild(body);
+  });
+
+  // close-price line + area
+  let d = '';
+  let dArea = '';
+  candles.forEach((c, i) => {
+    const x = 20 + i * cw + cw / 2;
+    const y = toY(c.close);
+    d += (i === 0 ? `M${x},${y}` : ` L${x},${y}`);
+    dArea += (i === 0 ? `M${x},${h} L${x},${y}` : ` L${x},${y}`);
+  });
+  dArea += ` L${20 + (N - 1) * cw + cw / 2},${h} Z`;
+  linePath.setAttribute('d', d);
+  areaPath.setAttribute('d', dArea);
+
+  // marker position = last close
+  const lastX = 20 + (N - 1) * cw + cw / 2;
+  const lastY = toY(candles[N - 1].close);
+  const hit = document.getElementById('hit');
+  hit.setAttribute('cx', lastX);
+  hit.setAttribute('cy', lastY);
+}
+
+// ============================================================
+// Animated price (rolling digits)
+// ============================================================
+function setRollingPrice(target) {
+  // target like 10128.88
+  const str = target.toFixed(2);
+  const priceEl = document.getElementById('price');
+  priceEl.innerHTML = '';
+  for (const ch of str) {
+    if (ch === '.') {
+      const dot = document.createElement('span');
+      dot.className = 'dot';
+      dot.textContent = '.';
+      priceEl.appendChild(dot);
+    } else if (ch === ',') {
+      const c = document.createElement('span');
+      c.className = 'dot'; c.textContent = ',';
+      priceEl.appendChild(c);
+    } else {
+      const slot = document.createElement('span');
+      slot.className = 'digit-roll';
+      const col = document.createElement('span');
+      col.className = 'col';
+      for (let i = 0; i <= 9; i++) {
+        const s = document.createElement('span');
+        s.textContent = i;
+        col.appendChild(s);
+      }
+      slot.appendChild(col);
+      priceEl.appendChild(slot);
+      // animate to digit ch
+      requestAnimationFrame(() => {
+        const target = parseInt(ch, 10);
+        // start with random spin then settle
+        const spins = 2;
+        col.style.transform = `translateY(-${(spins * 10 + target)}em)`;
+        col.addEventListener('transitionend', function once() {
+          col.style.transition = 'none';
+          col.style.transform = `translateY(-${target}em)`;
+          col.removeEventListener('transitionend', once);
+          setTimeout(() => { col.style.transition = ''; }, 20);
+        }, { once: true });
+      });
+    }
+  }
+}
+
+// ============================================================
+// Number ticker for delta / pct
+// ============================================================
+function animateNumber(el, from, to, dur, formatter) {
+  const start = performance.now();
+  function frame(t) {
+    const k = Math.min(1, (t - start) / dur);
+    const eased = 1 - Math.pow(1 - k, 3);
+    const v = from + (to - from) * eased;
+    el.textContent = formatter(v);
+    if (k < 1) requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
+
+// ============================================================
+// Clock
+// ============================================================
+(function clock() {
+  const el = document.getElementById('now');
+  setInterval(() => {
+    const d = new Date();
+    const pad = n => String(n).padStart(2, '0');
+    el.textContent = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}  ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+  }, 500);
+})();
+
+// ============================================================
+// Ticker bar
+// ============================================================
+(function ticker() {
+  const items = [
+    ['寒武纪', '10128.88', '+5.37%', 'up'],
+    ['英伟达', '1432.10', '+2.18%', 'up'],
+    ['中芯国际', '128.40', '+3.21%', 'up'],
+    ['海光信息', '186.55', '+4.06%', 'up'],
+    ['澜起科技', '92.30', '+1.85%', 'up'],
+    ['北方华创', '486.21', '+2.74%', 'up'],
+    ['上证指数', '3812.55', '+1.06%', 'up'],
+    ['科创50', '1124.66', '+2.41%', 'up'],
+    ['美元/人民币', '7.0832', '-0.12%', 'down'],
+    ['黄金', '2618.40', '+0.84%', 'up']
+  ];
+  const html = items.map(([n, p, c, d]) =>
+    `<span class="item"><b>${n}</b> ${p} <span class="${d}">${c}</span></span>`
+  ).join('');
+  document.getElementById('ticker').innerHTML = html + html;
+})();
+
+// ============================================================
+// Main sequence
+// ============================================================
+function runSequence() {
+  buildChart();
+
+  // animate header price
+  setTimeout(() => setRollingPrice(10128.88), 200);
+
+  const deltaEl = document.getElementById('delta');
+  const pctEl = document.getElementById('pct');
+  animateNumber(deltaEl, 0, 516.88, 2200, v => '+' + v.toFixed(2));
+  animateNumber(pctEl, 0, 5.37, 2200, v => '+' + v.toFixed(2) + '%');
+
+  // breakthrough banner + fireworks at ~4.2s (after line draws)
+  setTimeout(() => {
+    document.getElementById('banner').classList.add('show');
+    Fireworks.start();
+    setTimeout(() => Fireworks.stop(), 5200);
+  }, 4000);
+
+  // loop the breakthrough banner every ~14s for ambience
+  setInterval(() => {
+    const b = document.getElementById('banner');
+    b.classList.remove('show');
+    void b.offsetWidth;
+    b.classList.add('show');
+    Fireworks.start();
+    setTimeout(() => Fireworks.stop(), 5000);
+  }, 16000);
+}
+
+document.getElementById('startBtn').addEventListener('click', () => {
+  document.getElementById('intro').classList.add('hide');
+  runSequence();
+});
+
+// auto-start after 6s if user idles
+setTimeout(() => {
+  if (!document.getElementById('intro').classList.contains('hide')) {
+    document.getElementById('startBtn').click();
+  }
+}, 6000);
+</script>
+</body>
+</html>
