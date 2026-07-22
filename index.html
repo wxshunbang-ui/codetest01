@@ -3,987 +3,520 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>寒武纪 · 冲破 10000 元</title>
+<title>一年一影帝 · 百年周星驰 · 星爷电影全纪录</title>
+<meta name="description" content="纪念周星驰 —— 一年一影帝，百年周星驰。收录星爷从影以来参演、导演、编剧、监制的全部电影与电视剧，按年份排序，含封面、主演、剧情、豆瓣与 IMDb 评分。" />
 <style>
-  :root {
-    --bull-red: #ff2d4a;
-    --bull-red-glow: #ff5566;
-    --gold: #ffd24c;
-    --gold-glow: #ffe680;
-    --bg-0: #04060f;
-    --bg-1: #0a0f24;
-    --bg-2: #15193a;
-    --text: #f5f7ff;
-    --muted: #9aa3c7;
-    --grid: rgba(255,255,255,0.06);
+  :root{
+    --gold:#ffcf40;
+    --gold-2:#ffe694;
+    --red:#e63946;
+    --ink-0:#050308;
+    --ink-1:#0b0713;
+    --ink-2:#140b1f;
+    --text:#f6f1ff;
+    --muted:#a99fc4;
+    --line:rgba(255,255,255,.08);
+    --card:rgba(24,16,38,.72);
+    --db:#2f9e44;   /* 豆瓣绿 */
+    --imdb:#f5c518;  /* IMDb 金 */
   }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  html, body {
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    background: radial-gradient(ellipse at 50% 0%, var(--bg-2) 0%, var(--bg-1) 35%, var(--bg-0) 80%);
-    color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
-    user-select: none;
-  }
-
-  /* ===== Background layers ===== */
-  .stars, .gridbg, .scan, .vignette {
-    position: fixed; inset: 0; pointer-events: none;
-  }
-  .stars { z-index: 0; }
-  .gridbg {
-    z-index: 1;
-    background-image:
-      linear-gradient(var(--grid) 1px, transparent 1px),
-      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
-    background-size: 60px 60px;
-    mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 80%);
-    -webkit-mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 80%);
-    animation: gridShift 20s linear infinite;
-  }
-  @keyframes gridShift {
-    from { background-position: 0 0, 0 0; }
-    to   { background-position: 60px 60px, 60px 60px; }
-  }
-  .scan {
-    z-index: 2;
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
     background:
-      repeating-linear-gradient(0deg, rgba(255,255,255,0.012) 0 1px, transparent 1px 3px);
-    mix-blend-mode: overlay;
+      radial-gradient(1200px 700px at 50% -10%, #2a1440 0%, transparent 60%),
+      radial-gradient(900px 600px at 90% 20%, #3a0f1e 0%, transparent 55%),
+      linear-gradient(180deg,var(--ink-1) 0%, var(--ink-0) 100%);
+    color:var(--text);
+    font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
   }
-  .vignette {
-    z-index: 8;
-    background: radial-gradient(ellipse at center, rgba(0,0,0,0) 55%, rgba(0,0,0,0.7) 100%);
-  }
+  a{color:inherit}
 
-  /* ===== Canvas layers ===== */
-  canvas#particles, canvas#fireworks {
-    position: fixed; inset: 0; width: 100%; height: 100%;
-    pointer-events: none;
-  }
-  canvas#particles { z-index: 3; }
-  canvas#fireworks { z-index: 6; opacity: 0; transition: opacity .6s ease; }
-  canvas#fireworks.show { opacity: 1; }
+  /* ---------- starfield ---------- */
+  #stars{position:fixed;inset:0;z-index:0;pointer-events:none}
 
-  /* ===== Stage ===== */
-  .stage {
-    position: relative;
-    z-index: 5;
-    width: 100%;
-    height: 100%;
-    display: grid;
-    grid-template-rows: auto 1fr auto;
-    padding: 28px 48px 24px;
+  /* ---------- HERO ---------- */
+  .hero{position:relative;z-index:2;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:80px 20px 40px;overflow:hidden}
+  .hero::after{content:"";position:absolute;inset:0;background:radial-gradient(600px 380px at 50% 42%, rgba(255,207,64,.14), transparent 70%);pointer-events:none}
+  .kicker{letter-spacing:.5em;color:var(--gold);font-size:14px;text-indent:.5em;margin-bottom:22px;opacity:0;animation:fadeUp .9s .1s forwards}
+  .meganame{
+    font-size:clamp(64px,17vw,220px);font-weight:900;line-height:.9;letter-spacing:.02em;
+    background:linear-gradient(180deg,#fff 0%, var(--gold-2) 40%, var(--gold) 70%, var(--red) 130%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 6px 40px rgba(255,207,64,.35));
+    animation:glow 3.6s ease-in-out infinite alternate;
   }
+  @keyframes glow{from{filter:drop-shadow(0 6px 30px rgba(255,207,64,.25))}to{filter:drop-shadow(0 10px 60px rgba(230,57,70,.5))}}
+  .slogan{margin-top:26px;font-size:clamp(22px,5vw,46px);font-weight:800;opacity:0;animation:fadeUp 1s .35s forwards}
+  .slogan b{color:var(--gold)}
+  .slogan .sep{color:var(--red);margin:0 .35em}
+  .sub{margin-top:20px;max-width:680px;color:var(--muted);font-size:clamp(14px,2.4vw,18px);line-height:1.9;opacity:0;animation:fadeUp 1s .6s forwards}
+  .sub strong{color:var(--gold-2)}
+  .scrollcue{margin-top:46px;color:var(--muted);font-size:13px;letter-spacing:.2em;opacity:0;animation:fadeUp 1s .9s forwards}
+  .scrollcue span{display:block;margin-top:10px;font-size:22px;animation:bob 1.8s infinite}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
 
-  /* ===== Header ===== */
-  header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    gap: 24px;
-  }
-  .brand {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-  .brand .tag {
-    font-size: 12px;
-    letter-spacing: 0.4em;
-    color: var(--muted);
-    text-transform: uppercase;
-  }
-  .brand .name {
-    font-size: 28px;
-    font-weight: 800;
-    letter-spacing: 4px;
-    background: linear-gradient(90deg, #fff, #ffd24c 60%, #ff8a3d);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-  }
-  .brand .code {
-    font-size: 13px;
-    color: var(--muted);
-    letter-spacing: 2px;
-  }
-  .clock {
-    text-align: right;
-    color: var(--muted);
-    font-size: 13px;
-    letter-spacing: 2px;
-  }
-  .clock .market {
-    display: inline-flex; align-items: center; gap: 6px;
-    color: var(--bull-red);
-    font-weight: 700;
-  }
-  .pulse-dot {
-    width: 8px; height: 8px; border-radius: 50%;
-    background: var(--bull-red);
-    box-shadow: 0 0 0 0 rgba(255,45,74,0.7);
-    animation: pulse 1.4s infinite;
-  }
-  @keyframes pulse {
-    0% { box-shadow: 0 0 0 0 rgba(255,45,74,0.7); }
-    100% { box-shadow: 0 0 0 16px rgba(255,45,74,0); }
-  }
+  /* ---------- STATS ---------- */
+  .stats{position:relative;z-index:2;display:flex;flex-wrap:wrap;justify-content:center;gap:14px;max-width:1100px;margin:0 auto;padding:10px 20px 30px}
+  .stat{flex:1 1 160px;min-width:150px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px 18px;text-align:center;backdrop-filter:blur(8px)}
+  .stat .num{font-size:clamp(34px,6vw,54px);font-weight:900;background:linear-gradient(180deg,#fff,var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .stat .lbl{margin-top:6px;color:var(--muted);font-size:14px;letter-spacing:.08em}
 
-  /* ===== Main ===== */
-  main {
-    position: relative;
-    display: grid;
-    grid-template-columns: 1.05fr 1fr;
-    gap: 32px;
-    align-items: center;
-    padding-top: 12px;
-  }
+  /* ---------- controls ---------- */
+  .controls{position:sticky;top:0;z-index:6;background:linear-gradient(180deg,rgba(5,3,8,.92),rgba(5,3,8,.55) 80%,transparent);backdrop-filter:blur(10px);padding:16px 16px 18px;display:flex;flex-wrap:wrap;gap:10px;justify-content:center;align-items:center;border-bottom:1px solid var(--line)}
+  .filterbtn{cursor:pointer;border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--text);padding:9px 18px;border-radius:999px;font-size:14px;font-weight:600;transition:.25s;white-space:nowrap}
+  .filterbtn:hover{border-color:var(--gold);color:var(--gold)}
+  .filterbtn.active{background:linear-gradient(90deg,var(--gold),var(--red));color:#1a0d04;border-color:transparent;box-shadow:0 6px 24px rgba(255,207,64,.35)}
+  .count-note{width:100%;text-align:center;color:var(--muted);font-size:13px;margin-top:2px}
 
-  /* Left: price block */
-  .price-block {
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-    position: relative;
-  }
-  .breakthrough {
-    font-size: 14px;
-    letter-spacing: 8px;
-    color: var(--gold);
-    text-shadow: 0 0 12px rgba(255,210,76,0.4);
-  }
-  .price-line {
-    display: flex;
-    align-items: baseline;
-    gap: 14px;
-    flex-wrap: wrap;
-  }
-  .yuan {
-    font-size: 36px;
-    color: var(--bull-red-glow);
-    font-weight: 600;
-  }
-  .price {
-    font-family: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
-    font-size: clamp(80px, 11vw, 180px);
-    font-weight: 800;
-    line-height: 1;
-    color: #fff;
-    letter-spacing: -2px;
-    text-shadow:
-      0 0 24px rgba(255,45,74,0.45),
-      0 0 60px rgba(255,45,74,0.25);
-    display: inline-flex;
-    align-items: baseline;
-  }
-  .price .digit-roll {
-    display: inline-block;
-    width: 0.62em;
-    overflow: hidden;
-    height: 1em;
-    vertical-align: top;
-    position: relative;
-  }
-  .price .digit-roll .col {
-    display: flex;
-    flex-direction: column;
-    transition: transform 1.2s cubic-bezier(.2,.7,.2,1);
-  }
-  .price .digit-roll .col span {
-    height: 1em;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .price .dot {
-    width: 0.25em;
-    display: inline-flex;
-    justify-content: center;
-  }
-  .change-line {
-    display: flex;
-    align-items: center;
-    gap: 18px;
-    font-size: 22px;
-    font-weight: 700;
-    color: var(--bull-red);
-  }
-  .change-line .arrow {
-    display: inline-block;
-    transform: translateY(-1px);
-    filter: drop-shadow(0 0 6px rgba(255,45,74,0.7));
-  }
-  .change-line .pct {
-    background: linear-gradient(180deg, #ff5566, #ff2d4a);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-  }
-  .stats {
-    display: grid;
-    grid-template-columns: repeat(4, auto);
-    gap: 28px;
-    margin-top: 6px;
-  }
-  .stat .label {
-    font-size: 11px;
-    color: var(--muted);
-    letter-spacing: 2px;
-  }
-  .stat .value {
-    font-size: 16px;
-    font-weight: 600;
-    color: #fff;
-    margin-top: 4px;
-    font-variant-numeric: tabular-nums;
-  }
-  .stat .value.up { color: var(--bull-red); }
+  /* ---------- section title ---------- */
+  .sec-h{position:relative;z-index:2;text-align:center;margin:56px 20px 10px}
+  .sec-h h2{font-size:clamp(26px,5vw,40px);font-weight:900}
+  .sec-h h2 span{color:var(--gold)}
+  .sec-h p{color:var(--muted);margin-top:8px;font-size:14px}
 
-  /* Right: chart */
-  .chart-wrap {
-    position: relative;
-    height: 62vh;
-    min-height: 380px;
-    background:
-      linear-gradient(180deg, rgba(255,45,74,0.05), rgba(0,0,0,0)),
-      radial-gradient(ellipse at 50% 100%, rgba(255,45,74,0.1), transparent 70%);
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 14px;
-    overflow: hidden;
-    backdrop-filter: blur(2px);
-  }
-  .chart-wrap svg { width: 100%; height: 100%; display: block; }
-  .chart-label {
-    position: absolute;
-    top: 16px; left: 18px;
-    font-size: 12px;
-    letter-spacing: 3px;
-    color: var(--muted);
-  }
-  .chart-label b { color: #fff; letter-spacing: 1px; }
-  .axis-text {
-    fill: var(--muted);
-    font-size: 11px;
-    font-family: "SF Mono", Menlo, Consolas, monospace;
-  }
-  .grid-line { stroke: rgba(255,255,255,0.05); stroke-width: 1; }
-  .target-line {
-    stroke: var(--gold);
-    stroke-width: 1.5;
-    stroke-dasharray: 6 6;
-    filter: drop-shadow(0 0 6px rgba(255,210,76,0.6));
-  }
-  .target-label {
-    fill: var(--gold);
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 2px;
-  }
+  /* ---------- timeline / grid ---------- */
+  .wrap{position:relative;z-index:2;max-width:1240px;margin:0 auto;padding:20px 18px 60px}
+  .era{margin-top:38px}
+  .era-year{display:flex;align-items:center;gap:16px;margin:0 4px 20px}
+  .era-year .y{font-size:clamp(30px,7vw,60px);font-weight:900;color:transparent;-webkit-text-stroke:1.5px var(--gold);letter-spacing:.02em}
+  .era-year .bar{flex:1;height:1px;background:linear-gradient(90deg,var(--gold),transparent)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:22px}
 
-  .price-area {
-    fill: url(#areaGrad);
-    opacity: 0;
-    animation: areaIn 1.4s 1.2s ease forwards;
-  }
-  .price-line-path {
-    fill: none;
-    stroke: url(#lineGrad);
-    stroke-width: 2.6;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    filter: drop-shadow(0 0 6px rgba(255,45,74,0.5));
-    stroke-dasharray: 2600;
-    stroke-dashoffset: 2600;
-    animation: drawLine 4.2s 0.4s cubic-bezier(.55,.08,.2,1) forwards;
-  }
-  @keyframes drawLine { to { stroke-dashoffset: 0; } }
-  @keyframes areaIn { to { opacity: 1; } }
+  .card{position:relative;background:var(--card);border:1px solid var(--line);border-radius:20px;overflow:hidden;opacity:0;transform:translateY(28px) scale(.98);transition:opacity .7s,transform .7s,box-shadow .3s,border-color .3s}
+  .card.in{opacity:1;transform:none}
+  .card:hover{border-color:rgba(255,207,64,.55);box-shadow:0 18px 48px rgba(0,0,0,.55),0 0 0 1px rgba(255,207,64,.2)}
+  .poster{position:relative;height:220px;display:flex;flex-direction:column;justify-content:flex-end;padding:16px;overflow:hidden}
+  .poster::before{content:"";position:absolute;inset:0;background:linear-gradient(160deg,var(--pa),var(--pb));opacity:.95}
+  .poster::after{content:"";position:absolute;inset:0;background:
+     radial-gradient(120px 120px at 80% 15%, rgba(255,255,255,.28), transparent 70%),
+     repeating-linear-gradient(45deg, rgba(0,0,0,.10) 0 12px, transparent 12px 24px);
+     mix-blend-mode:overlay}
+  .poster .pt{position:relative;z-index:2;font-size:clamp(22px,3vw,30px);font-weight:900;color:#fff;text-shadow:0 3px 18px rgba(0,0,0,.5);line-height:1.1}
+  .poster .pyear{position:absolute;top:14px;left:16px;z-index:2;font-size:13px;font-weight:800;letter-spacing:.1em;color:rgba(255,255,255,.9);background:rgba(0,0,0,.28);padding:3px 10px;border-radius:999px;backdrop-filter:blur(3px)}
+  .poster .peng{position:relative;z-index:2;margin-top:6px;font-size:12px;letter-spacing:.06em;color:rgba(255,255,255,.85);font-style:italic}
+  .poster .art{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden}
+  .poster .art svg{width:100%;height:100%;display:block;transition:transform .5s}
+  .card:hover .poster .art svg{transform:scale(1.06)}
+  .poster .scrim{position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,transparent 42%,rgba(0,0,0,.15) 62%,rgba(0,0,0,.62));pointer-events:none}
+  .poster .perf{position:absolute;left:0;right:0;height:12px;z-index:3;background:repeating-linear-gradient(90deg,rgba(6,4,10,.8) 0 7px,transparent 7px 15px);opacity:.4;pointer-events:none}
+  .poster .perf.t{top:0}.poster .perf.b{bottom:0}
+  .roles{position:absolute;top:12px;right:12px;z-index:2;display:flex;flex-direction:column;gap:5px;align-items:flex-end}
+  .rtag{font-size:11px;font-weight:800;padding:3px 9px;border-radius:999px;color:#160b02;letter-spacing:.05em}
+  .r-act{background:linear-gradient(90deg,#ffd24c,#ffb020)}
+  .r-dir{background:linear-gradient(90deg,#ff7a7a,#e63946);color:#fff}
+  .r-wri{background:linear-gradient(90deg,#8ce0ff,#4aa8ff);color:#04233b}
+  .r-pro{background:linear-gradient(90deg,#c9a3ff,#8b5cf6);color:#fff}
+  .r-tv{background:linear-gradient(90deg,#a0f0c0,#2f9e44);color:#04331a}
 
-  .candle { opacity: 0; transform-origin: bottom; animation: candleIn .35s forwards; }
-  @keyframes candleIn { to { opacity: 1; } }
+  .cbody{padding:16px 16px 18px}
+  .ratings{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+  .rate{display:flex;align-items:center;gap:7px;padding:6px 11px;border-radius:12px;font-weight:800;font-size:14px;border:1px solid var(--line)}
+  .rate small{font-weight:600;font-size:11px;color:var(--muted);letter-spacing:.05em}
+  .rate .v{font-size:16px}
+  .rate.db .v{color:#63d976}
+  .rate.imdb .v{color:var(--imdb)}
+  .rate.na .v{color:var(--muted);font-size:14px}
+  .cast{color:var(--gold-2);font-size:13px;margin-bottom:10px;line-height:1.6}
+  .cast b{color:var(--muted);font-weight:600}
+  .plot{color:var(--muted);font-size:13.5px;line-height:1.85}
 
-  .breakthrough-glow {
-    fill: var(--gold);
-    opacity: 0;
-    animation: glowDot 1.6s 4.0s ease forwards;
-  }
-  @keyframes glowDot {
-    0% { opacity: 0; r: 0; }
-    50% { opacity: 1; r: 10; }
-    100% { opacity: 0.9; r: 6; }
-  }
+  /* ---------- footer ---------- */
+  footer{position:relative;z-index:2;text-align:center;padding:56px 22px 90px;border-top:1px solid var(--line);margin-top:40px}
+  footer .fbig{font-size:clamp(22px,5vw,40px);font-weight:900;background:linear-gradient(90deg,var(--gold),var(--red));-webkit-background-clip:text;background-clip:text;color:transparent}
+  footer p{color:var(--muted);font-size:13px;margin-top:14px;line-height:1.9;max-width:720px;margin-left:auto;margin-right:auto}
 
-  /* ===== Footer ticker ===== */
-  footer {
-    position: relative;
-    padding-top: 16px;
-    border-top: 1px solid rgba(255,255,255,0.05);
-    overflow: hidden;
-    height: 44px;
-  }
-  .ticker {
-    display: flex;
-    gap: 48px;
-    white-space: nowrap;
-    animation: tickerScroll 38s linear infinite;
-    color: var(--muted);
-    font-size: 13px;
-    letter-spacing: 1px;
-  }
-  .ticker .item b { color: #fff; margin-right: 6px; letter-spacing: 2px; }
-  .ticker .up { color: var(--bull-red); }
-  .ticker .down { color: #36d399; }
-  @keyframes tickerScroll {
-    from { transform: translateX(0); }
-    to   { transform: translateX(-50%); }
-  }
+  .toTop{position:fixed;right:20px;bottom:24px;z-index:20;width:48px;height:48px;border-radius:50%;border:1px solid var(--line);background:rgba(24,16,38,.9);color:var(--gold);font-size:20px;cursor:pointer;opacity:0;pointer-events:none;transition:.3s;backdrop-filter:blur(6px)}
+  .toTop.show{opacity:1;pointer-events:auto}
+  .toTop:hover{border-color:var(--gold);transform:translateY(-3px)}
 
-  /* ===== Breakthrough banner ===== */
-  .banner {
-    position: fixed;
-    inset: 0;
-    z-index: 7;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    pointer-events: none;
-    opacity: 0;
-  }
-  .banner.show { animation: bannerShow 3.8s ease forwards; }
-  @keyframes bannerShow {
-    0%   { opacity: 0; transform: scale(1.05); }
-    10%  { opacity: 1; transform: scale(1); }
-    80%  { opacity: 1; transform: scale(1); }
-    100% { opacity: 0; transform: scale(1.05); }
-  }
-  .banner .ring {
-    position: absolute;
-    width: 80vmin; height: 80vmin;
-    border-radius: 50%;
-    border: 1px solid rgba(255,210,76,0.25);
-    box-shadow: 0 0 80px rgba(255,210,76,0.15) inset;
-    animation: ringExpand 2.4s ease-out infinite;
-  }
-  .banner .ring:nth-child(2) { animation-delay: .6s; }
-  .banner .ring:nth-child(3) { animation-delay: 1.2s; }
-  @keyframes ringExpand {
-    0% { transform: scale(0.4); opacity: 0; }
-    20% { opacity: 1; }
-    100% { transform: scale(1.2); opacity: 0; }
-  }
-  .banner .text {
-    text-align: center;
-    transform: translateY(-4vh);
-  }
-  .banner .small {
-    font-size: 14px;
-    letter-spacing: 12px;
-    color: var(--gold);
-    margin-bottom: 18px;
-    text-shadow: 0 0 12px rgba(255,210,76,0.5);
-  }
-  .banner .big {
-    font-size: clamp(60px, 9vw, 140px);
-    font-weight: 900;
-    letter-spacing: 8px;
-    background: linear-gradient(180deg, #fff 10%, #ffd24c 60%, #ff8a3d 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    text-shadow: 0 0 40px rgba(255,210,76,0.4);
-  }
-  .banner .sub {
-    margin-top: 14px;
-    font-size: 18px;
-    letter-spacing: 6px;
-    color: rgba(255,255,255,0.85);
-  }
-  .banner .sub b { color: var(--bull-red-glow); font-weight: 800; }
+  /* ---------- music button ---------- */
+  .musicBtn{position:fixed;left:20px;bottom:24px;z-index:20;display:flex;align-items:center;gap:9px;height:48px;padding:0 16px 0 14px;border-radius:999px;border:1px solid rgba(255,207,64,.4);background:rgba(24,16,38,.9);color:var(--gold);cursor:pointer;backdrop-filter:blur(6px);transition:border-color .3s,transform .3s,box-shadow .3s,color .3s;font-weight:700;font-size:13px;letter-spacing:.05em;font-family:inherit}
+  .musicBtn:hover{border-color:var(--gold);transform:translateY(-3px);box-shadow:0 8px 24px rgba(255,207,64,.28)}
+  .musicBtn .eq{display:flex;align-items:flex-end;gap:2px;height:16px}
+  .musicBtn .eq i{width:3px;height:4px;background:currentColor;border-radius:2px}
+  .musicBtn.on{color:var(--gold);border-color:rgba(255,207,64,.55)}
+  .musicBtn.on .eq i{animation:eqbar 1s ease-in-out infinite}
+  .musicBtn.on .eq i:nth-child(2){animation-delay:.22s}
+  .musicBtn.on .eq i:nth-child(3){animation-delay:.44s}
+  .musicBtn.on .eq i:nth-child(4){animation-delay:.14s}
+  .musicBtn.off{color:var(--muted);border-color:var(--line)}
+  .musicBtn.off .eq i{height:4px}
+  @keyframes eqbar{0%,100%{height:4px}50%{height:16px}}
+  .mhint{position:fixed;left:20px;bottom:82px;z-index:20;max-width:238px;background:linear-gradient(90deg,var(--gold),var(--red));color:#1a0d04;font-size:12.5px;font-weight:700;line-height:1.5;padding:9px 14px;border-radius:12px;box-shadow:0 10px 28px rgba(0,0,0,.45);opacity:0;transform:translateY(8px);transition:.45s;pointer-events:none}
+  .mhint.show{opacity:1;transform:none}
 
-  /* ===== Intro overlay ===== */
-  .intro {
-    position: fixed; inset: 0; z-index: 20;
-    background: var(--bg-0);
-    display: flex; align-items: center; justify-content: center;
-    transition: opacity .8s ease;
-  }
-  .intro.hide { opacity: 0; pointer-events: none; }
-  .intro button {
-    background: linear-gradient(135deg, var(--bull-red), #ff6b3d);
-    border: none; color: #fff; font-weight: 800;
-    padding: 14px 36px; font-size: 16px; letter-spacing: 6px;
-    border-radius: 999px; cursor: pointer;
-    box-shadow: 0 8px 30px rgba(255,45,74,0.4);
-    transition: transform .2s ease, box-shadow .2s ease;
-  }
-  .intro button:hover { transform: translateY(-2px); box-shadow: 0 12px 36px rgba(255,45,74,0.55); }
-  .intro .hint {
-    position: absolute; bottom: 32px;
-    color: var(--muted); font-size: 12px; letter-spacing: 4px;
-  }
-  .intro h1 {
-    position: absolute; top: 14vh;
-    text-align: center; width: 100%;
-    font-size: clamp(28px, 4.5vw, 56px);
-    letter-spacing: 14px;
-    background: linear-gradient(90deg, #fff, #ffd24c);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-  }
-  .intro h2 {
-    position: absolute; top: calc(14vh + 70px);
-    text-align: center; width: 100%;
-    font-size: 14px; letter-spacing: 10px;
-    color: var(--muted); font-weight: 400;
-  }
-
-  @media (max-width: 900px) {
-    main { grid-template-columns: 1fr; }
-    .chart-wrap { height: 40vh; }
-    .stage { padding: 18px; }
-    .stats { grid-template-columns: repeat(2, auto); gap: 16px; }
+  @media (max-width:520px){
+    .grid{grid-template-columns:1fr}
+    .stat{flex-basis:44%}
   }
 </style>
 </head>
 <body>
+<canvas id="stars"></canvas>
 
-<!-- background layers -->
-<canvas id="stars" class="stars"></canvas>
-<div class="gridbg"></div>
-<canvas id="particles"></canvas>
-<div class="scan"></div>
-<canvas id="fireworks"></canvas>
-<div class="vignette"></div>
+<header class="hero">
+  <div class="kicker">CELEBRATING · STEPHEN CHOW · 星 爺</div>
+  <h1 class="meganame">周星驰</h1>
+  <div class="slogan"><b>一年一影帝</b><span class="sep">·</span><b>百年周星驰</b></div>
+  <p class="sub">从 TVB 龙套到华语电影之王，从《霹雳先锋》到《美人鱼》。这里收录星爷自入行以来<strong>参演、导演、编剧、监制</strong>的全部作品，按时间排序，让每一个打开这个网页的人，都清清楚楚看见——喜剧的背后，是一位真正的大师。</p>
+  <div class="scrollcue">向下滑动，走进星爷的光影岁月<span>↓</span></div>
+</header>
 
-<!-- intro -->
-<div class="intro" id="intro">
-  <h1>寒 武 纪</h1>
-  <h2>CAMBRICON · 688256.SH</h2>
-  <button id="startBtn">点 击 开 始</button>
-  <div class="hint">建议在桌面浏览器全屏体验</div>
+<section class="stats" id="stats"></section>
+
+<nav class="controls" id="controls">
+  <button class="filterbtn active" data-f="all">全部作品</button>
+  <button class="filterbtn" data-f="act">主演 / 参演</button>
+  <button class="filterbtn" data-f="dir">导演</button>
+  <button class="filterbtn" data-f="wri">编剧</button>
+  <button class="filterbtn" data-f="pro">监制 / 出品</button>
+  <button class="filterbtn" data-f="tv">电视剧</button>
+  <div class="count-note" id="countNote"></div>
+</nav>
+
+<div class="sec-h">
+  <h2>星爷 <span>光影编年史</span></h2>
+  <p>按年份倒序 · 悬停查看细节 · 评分为豆瓣 / IMDb 参考值</p>
 </div>
 
-<!-- main stage -->
-<div class="stage">
-  <header>
-    <div class="brand">
-      <span class="tag">CAMBRICON · 688256</span>
-      <span class="name">寒 武 纪</span>
-      <span class="code">中国 AI 芯片旗舰 · 科创板</span>
-    </div>
-    <div class="clock">
-      <div class="market"><span class="pulse-dot"></span>LIVE · 沪市开盘中</div>
-      <div id="now">--:--:--</div>
-    </div>
-  </header>
+<main class="wrap" id="app"></main>
 
-  <main>
-    <section class="price-block">
-      <div class="breakthrough">历 史 性 突 破</div>
-      <div class="price-line">
-        <span class="yuan">¥</span>
-        <span class="price" id="price"></span>
-      </div>
-      <div class="change-line">
-        <span class="arrow">▲</span>
-        <span id="delta">+0.00</span>
-        <span class="pct" id="pct">+0.00%</span>
-        <span style="font-size:13px;color:var(--muted);letter-spacing:3px;">较前日收盘</span>
-      </div>
-      <div class="stats">
-        <div class="stat">
-          <div class="label">今 开</div>
-          <div class="value" id="sOpen">9,612.00</div>
-        </div>
-        <div class="stat">
-          <div class="label">最 高</div>
-          <div class="value up" id="sHigh">10,128.88</div>
-        </div>
-        <div class="stat">
-          <div class="label">最 低</div>
-          <div class="value" id="sLow">9,580.50</div>
-        </div>
-        <div class="stat">
-          <div class="label">成 交 额</div>
-          <div class="value" id="sVol">¥ 286.4 亿</div>
-        </div>
-      </div>
-    </section>
+<footer>
+  <div class="fbig">谢谢你，带给我们那么多欢笑</div>
+  <p>「其实我是一个演员。」——《喜剧之王》</p>
+  <p>本页作品清单按公开资料整理，涵盖周星驰参演、导演、编剧、监制的电影与电视剧；豆瓣 / IMDb 评分为整理时的参考数值，可能随时间变动，仅供缅怀与欣赏之用。封面为契合影片气质的艺术化设计卡片。</p>
+  <p style="margin-top:18px;color:#6c6486">献给每一个笑过、也哭过的星迷 · 一年一影帝，百年周星驰</p>
+</footer>
 
-    <section class="chart-wrap">
-      <div class="chart-label">日K · <b>2026 · 突破之日</b></div>
-      <svg id="chart" viewBox="0 0 800 500" preserveAspectRatio="none">
-        <defs>
-          <linearGradient id="lineGrad" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0%"  stop-color="#ffd24c"/>
-            <stop offset="55%" stop-color="#ff5566"/>
-            <stop offset="100%" stop-color="#ff2d4a"/>
-          </linearGradient>
-          <linearGradient id="areaGrad" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0%"  stop-color="rgba(255,45,74,0.35)"/>
-            <stop offset="100%" stop-color="rgba(255,45,74,0)"/>
-          </linearGradient>
-          <filter id="glow">
-            <feGaussianBlur stdDeviation="2.4" result="b"/>
-            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-          </filter>
-        </defs>
+<button class="musicBtn on" id="musicBtn" aria-label="背景音乐开关" title="背景音乐 开 / 关">
+  <span class="eq"><i></i><i></i><i></i><i></i></span>
+  <span id="mlabel">音乐 ON</span>
+</button>
+<div class="mhint" id="mhint">♪ 轻触屏幕任意处，聆听星爷的旋律</div>
 
-        <!-- horizontal grid lines + y labels -->
-        <g id="grid"></g>
-
-        <!-- target line at 10000 -->
-        <line class="target-line" x1="0" x2="800" y1="120" y2="120"/>
-        <text class="target-label" x="12" y="112">目标价 ¥ 10,000</text>
-
-        <!-- candles + line + area -->
-        <g id="candles"></g>
-        <path id="area" class="price-area" d=""></path>
-        <path id="line" class="price-line-path" d=""></path>
-
-        <!-- breakthrough marker -->
-        <circle id="hit" class="breakthrough-glow" cx="760" cy="118" r="6" filter="url(#glow)"/>
-      </svg>
-    </section>
-  </main>
-
-  <footer>
-    <div class="ticker" id="ticker"></div>
-  </footer>
-</div>
-
-<!-- breakthrough banner -->
-<div class="banner" id="banner">
-  <div class="ring"></div>
-  <div class="ring"></div>
-  <div class="ring"></div>
-  <div class="text">
-    <div class="small">B R E A K T H R O U G H</div>
-    <div class="big">¥ 10,000</div>
-    <div class="sub">寒武纪 · 历史首次冲破 <b>万元股价</b></div>
-  </div>
-</div>
+<button class="toTop" id="toTop" aria-label="回到顶部">↑</button>
 
 <script>
-// ============================================================
-// Utility
-// ============================================================
-const $ = s => document.querySelector(s);
-const rand = (a, b) => a + Math.random() * (b - a);
+/* =========================================================
+   周星驰作品数据（按年份升序，渲染时倒序）
+   roles: act=演员 dir=导演 wri=编剧 pro=监制/出品 tv=电视剧
+   db / imdb 为参考评分，null 表示暂无
+========================================================= */
+const FILMS = [
+ {t:"430穿梭机",e:"Children's Paradise (TVB)",y:1983,roles:["tv","act"],db:null,imdb:null,cast:"周星驰 等",plot:"周星驰在无线电视儿童节目《430穿梭机》担任主持，是他演艺生涯的起点。青涩的少年主持人，谁也没想到日后会成为一代喜剧之王。"},
+ {t:"盖世豪侠",e:"The Final Combat (TVB)",y:1989,roles:["tv","act"],db:8.4,imdb:null,cast:"周星驰、吴孟达、万梓良",plot:"TVB 武侠喜剧。周星驰饰段飞，与吴孟达首度深度合作，「无厘头」风格初现雏形，「坐这么远怎么打招呼」等桥段成为经典。"},
+ {t:"他来自江湖",e:"The Justice of Life (TVB)",y:1989,roles:["tv","act"],db:8.6,imdb:null,cast:"周星驰、吴孟达、李婉华",plot:"TVB 时装喜剧，周星驰与吴孟达饰演父子，笑料百出又不失温情。达叔与星爷的黄金搭档自此奠定。"},
+ {t:"霹雳先锋",e:"Final Justice",y:1988,roles:["act"],db:7.0,imdb:6.4,cast:"李修贤、周星驰、吴孟达",plot:"周星驰的电影处女作，饰演小混混阿星。凭此片一举夺得第25届金马奖最佳男配角，正式踏入影坛。"},
+ {t:"龙在天涯",e:"Dragon Fight",y:1989,roles:["act"],db:6.4,imdb:5.6,cast:"李连杰、周星驰、利智",plot:"周星驰与李连杰罕见同框之作。异国他乡的兄弟情义与江湖恩怨，星爷此时仍在探索属于自己的表演路线。"},
+ {t:"义胆群英",e:"Just Heroes",y:1989,roles:["act"],db:7.0,imdb:6.6,cast:"狄龙、姜大卫、周星驰",plot:"吴宇森、午马联合执导的江湖情义群戏，为悼念张彻而作。周星驰参演其中，向前辈致敬。"},
+ {t:"一本漫画闯天涯",e:"The Unmatchable Match",y:1990,roles:["act"],db:7.2,imdb:6.4,cast:"周星驰、张敏、吴孟达",plot:"周星驰首次担纲男主角的电影。爱看漫画的青年阴差阳错卷入黑帮纷争，无厘头喜剧风格全面爆发。"},
+ {t:"咖喱辣椒",e:"Curry and Pepper",y:1990,roles:["act"],db:7.4,imdb:6.6,cast:"周星驰、张学友、张敏",plot:"周星驰与张学友饰演一对活宝警察「咖喱」与「辣椒」，动作喜剧火花四溅，兄弟情义感人。"},
+ {t:"赌圣",e:"All for the Winner",y:1990,roles:["act"],db:7.9,imdb:7.0,cast:"周星驰、吴孟达、张敏",plot:"从大陆来港、拥有特异功能的「阿星」大战赌坛。刷新香港票房纪录，正式引爆「星爷现象」，无厘头喜剧登顶。"},
+ {t:"赌侠",e:"God of Gamblers II",y:1990,roles:["act"],db:7.7,imdb:6.9,cast:"周润发、周星驰、吴孟达",plot:"「双周」联手之作。周星驰饰演赌圣星仔，与周润发的赌神并肩作战，星味与发哥魅力交相辉映。"},
+ {t:"望夫成龙",e:"Love Is Love",y:1990,roles:["act"],db:6.9,imdb:6.2,cast:"周星驰、吴君如、吴孟达",plot:"小人物的爱情与奋斗故事，周星驰与吴君如的市井喜剧，笑中带泪。"},
+ {t:"无敌幸运星",e:"When Fortune Smiles",y:1990,roles:["act"],db:6.8,imdb:6.4,cast:"周星驰、吴君如、董骠",plot:"围绕一笔巨额遗产展开的爆笑争夺战，星爷式的机灵与荒诞贯穿始终。"},
+ {t:"师兄撞鬼",e:"Look Out, Officer!",y:1990,roles:["act"],db:6.9,imdb:6.5,cast:"周星驰、张学友、吴君如",plot:"含冤而死的警察化作鬼魂，附身菜鸟警探（周星驰）查案。灵异与搞笑齐飞的港式喜剧。"},
+ {t:"龙凤茶楼",e:"Lung Fung Restaurant",y:1990,roles:["act"],db:6.9,imdb:6.3,cast:"周星驰、张敏、吴孟达",plot:"茶楼小人物在乱世中的挣扎与义气，星爷演绎草根角色的血性一面。"},
+ {t:"江湖最后一个大佬",e:"Triad Story",y:1990,roles:["act"],db:6.6,imdb:6.1,cast:"徐锦江、周星驰",plot:"洗手退隐的江湖大佬重出江湖，周星驰参演的一部黑帮题材作品。"},
+ {t:"整蛊专家",e:"Tricky Brains",y:1991,roles:["act"],db:7.8,imdb:6.9,cast:"周星驰、刘德华、关之琳",plot:"「专业整人」的古晶大战各路人马，脑洞大开的整蛊桥段层出不穷，无厘头想象力的巅峰之一。"},
+ {t:"逃学威龙",e:"Fight Back to School",y:1991,roles:["act"],db:8.0,imdb:7.0,cast:"周星驰、张敏、吴孟达",plot:"飞虎队精英周星星卧底中学寻枪。校园与警匪的混搭大获成功，登顶1991年香港票房冠军，开创系列。"},
+ {t:"赌侠II之上海滩赌圣",e:"God of Gamblers III: Back to Shanghai",y:1991,roles:["act"],db:7.5,imdb:6.7,cast:"周星驰、巩俐、吴孟达",plot:"赌圣穿越回旧上海滩，与巩俐饰演的角色上演一段乱世奇缘，赌术与穿越元素混搭。"},
+ {t:"情圣",e:"Magnificent Scoundrels",y:1991,roles:["act"],db:7.5,imdb:6.7,cast:"周星驰、毛舜筠、吴君如",plot:"一群骗子斗智斗勇的爆笑群戏，周星驰的急智与临场反应令人捧腹。"},
+ {t:"新精武门1991",e:"Fist of Fury 1991",y:1991,roles:["act"],db:6.9,imdb:6.4,cast:"周星驰、张敏、李丽珍",plot:"以功夫喜剧解构经典，乡下青年进城闯荡的无厘头冒险。"},
+ {t:"龙的传人",e:"Legend of the Dragon",y:1991,roles:["act"],db:7.2,imdb:6.5,cast:"周星驰、张敏、吴孟达",plot:"乡下来的桌球高手（周星驰）在都市赛场大放异彩，把台球打成一门功夫。"},
+ {t:"豪门夜宴",e:"The Banquet",y:1991,roles:["act"],db:6.7,imdb:6.3,cast:"周星驰、张国荣、周润发等群星",plot:"香港影坛为华东水灾赈灾义拍的贺岁群星喜剧，众多巨星倾情客串，星光熠熠。"},
+ {t:"家有喜事",e:"All's Well, Ends Well",y:1992,roles:["act"],db:8.4,imdb:7.2,cast:"周星驰、张国荣、张曼玉、毛舜筠",plot:"贺岁经典。三兄弟各自的爱情喜剧，周星驰与张曼玉「相视一笑泯恩仇」的对手戏堪称神来之笔。"},
+ {t:"逃学威龙2",e:"Fight Back to School II",y:1992,roles:["act"],db:7.4,imdb:6.7,cast:"周星驰、张敏、吴孟达",plot:"周星星再度出马卧底查案，延续第一部的校园警匪笑料，动作场面升级。"},
+ {t:"审死官",e:"Justice, My Foot!",y:1992,roles:["act"],db:8.2,imdb:7.2,cast:"周星驰、梅艳芳、吴孟达",plot:"巧舌如簧的状师宋世杰重出江湖为民伸冤。星爷与梅艳芳飙戏，登顶1992年香港票房冠军。"},
+ {t:"鹿鼎记",e:"Royal Tramp",y:1992,roles:["act"],db:8.1,imdb:7.0,cast:"周星驰、林青霞、张敏、邱淑贞",plot:"金庸名著的无厘头改编。市井小混混韦小宝周旋于朝廷与天地会之间，八面玲珑，妙趣横生。"},
+ {t:"鹿鼎记II之神龙教",e:"Royal Tramp II",y:1992,roles:["act"],db:7.9,imdb:6.9,cast:"周星驰、林青霞、邱淑贞",plot:"《鹿鼎记》续集，韦小宝继续在各方势力间左右逢源，林青霞反串神龙教主惊艳全场。"},
+ {t:"武状元苏乞儿",e:"King of Beggars",y:1992,roles:["act"],db:8.4,imdb:7.4,cast:"周星驰、张敏、吴孟达",plot:"富家子苏灿家道中落沦为乞丐，终悟「睡梦罗汉拳」成丐帮之首。笑料之外，藏着家国与尊严的厚重。"},
+ {t:"逃学威龙3之龙过鸡年",e:"Fight Back to School III",y:1993,roles:["act"],db:6.9,imdb:6.3,cast:"周星驰、张敏、毛舜筠",plot:"系列第三部，周星星卷入豪门谋杀案，卧底斗智再升级。"},
+ {t:"唐伯虎点秋香",e:"Flirting Scholar",y:1993,roles:["act"],db:8.7,imdb:7.4,cast:"周星驰、巩俐、郑佩佩",plot:"江南才子唐伯虎为追秋香卖身华府。对联斗诗、夺命书生，无厘头才华横溢，登顶1993香港票房冠军，经典中的经典。"},
+ {t:"济公",e:"The Mad Monk",y:1993,roles:["act"],db:7.6,imdb:6.7,cast:"周星驰、张曼玉、吴孟达、黄秋生",plot:"降龙罗汉下凡历劫，度化三个「无可救药」之人。喜剧外壳下，是关于慈悲与救赎的沉重命题。"},
+ {t:"破坏之王",e:"Love on Delivery",y:1994,roles:["act"],db:8.1,imdb:7.1,cast:"周星驰、钟丽缇、吴孟达",plot:"外卖仔何金银为爱苦练「无敌风火轮」。「我阿妈都不认得我」的经典桥段，小人物的逆袭与深情。"},
+ {t:"九品芝麻官",e:"Hail the Judge",y:1994,roles:["act"],db:8.5,imdb:7.4,cast:"周星驰、吴启华、徐锦江、张敏",plot:"贪官包龙星痛改前非，靠一张利嘴为民伸冤斗恶霸。骂人不带脏字的巅峰之作，酣畅淋漓。"},
+ {t:"国产凌凌漆",e:"From Beijing with Love",y:1994,roles:["act","dir"],db:8.6,imdb:7.4,cast:"周星驰、袁咏仪、罗家英",plot:"周星驰首次执导。卖猪肉的特工「凌凌漆」奉命出任务，恶搞007。太阳能手电筒与要你命3000，荒诞中见巧思。"},
+ {t:"大话西游之月光宝盒",e:"A Chinese Odyssey Part One: Pandora's Box",y:1995,roles:["act"],db:8.8,imdb:7.7,cast:"周星驰、朱茵、莫文蔚、吴孟达",plot:"至尊宝借月光宝盒穿越，牵出五百年的孽缘。上映时叫好不叫座，日后却成为一代人的爱情圣经。"},
+ {t:"大话西游之大圣娶亲",e:"A Chinese Odyssey Part Two: Cinderella",y:1995,roles:["act"],db:9.2,imdb:8.0,cast:"周星驰、朱茵、莫文蔚、吴孟达",plot:"「曾经有一份真挚的爱情摆在我面前……」至尊宝戴上金箍成为孙悟空。爱情与宿命的终极悲喜，星爷生涯代表作，豆瓣封神。"},
+ {t:"回魂夜",e:"Out of the Dark",y:1995,roles:["act"],db:8.1,imdb:7.0,cast:"周星驰、莫文蔚、李力持",plot:"精神病院走出的「捉鬼大师」Leon 大战恶鬼。cult 味十足、被严重低估的黑色喜剧，多年后被封为神作。"},
+ {t:"百变星君",e:"Sixty Million Dollar Man",y:1995,roles:["act"],db:7.2,imdb:6.6,cast:"周星驰、吴孟达、徐锦江",plot:"纨绔子弟遭陷害后被改造成「百变金刚」，可化身任何物体。特技与无厘头齐飞的癫狂喜剧。"},
+ {t:"大内密探零零发",e:"Forbidden City Cop",y:1996,roles:["act","dir"],db:8.2,imdb:7.2,cast:"周星驰、刘嘉玲、罗家英",plot:"周星驰自导自演。武功平平却爱搞发明的皇家密探零零发，靠智慧与老婆化解危机。喜剧下的夫妻情深令人动容。"},
+ {t:"食神",e:"The God of Cookery",y:1996,roles:["act","dir"],db:8.5,imdb:7.6,cast:"周星驰、莫文蔚、吴孟达",plot:"跌落神坛的「食神」从街头「爆浆濑尿牛丸」东山再起。黯然销魂饭背后，是关于初心与人性的深刻寓言。"},
+ {t:"97家有喜事",e:"All's Well, Ends Well 1997",y:1997,roles:["act"],db:7.9,imdb:6.9,cast:"周星驰、钟丽缇、张国荣",plot:"贺岁喜剧续作，周星驰与张国荣同台飙戏，爱情与家庭的欢乐团圆。"},
+ {t:"算死草",e:"Lawyer Lawyer",y:1997,roles:["act"],db:7.6,imdb:6.7,cast:"周星驰、莫文蔚、葛民辉",plot:"清末讼师陈梦吉巧舌如簧，为蒙冤者翻案。承袭《审死官》的状师题材，机锋处处。"},
+ {t:"行运一条龙",e:"The Lucky Guy",y:1998,roles:["act","pro"],db:7.4,imdb:6.6,cast:"周星驰、吴孟达、钟丽缇、黄一飞",plot:"茶餐厅里的市井众生相与爱情故事。周星驰监制并主演，捧红了一众新人。"},
+ {t:"喜剧之王",e:"King of Comedy",y:1999,roles:["act","dir","wri"],db:8.7,imdb:7.5,cast:"周星驰、张柏芝、莫文蔚、吴孟达",plot:"跑龙套的尹天仇怀揣演员梦想。「其实我是一个演员」——星爷写给所有小人物的情书，也是他的半自传，笑与泪的巅峰。"},
+ {t:"千王之王2000",e:"The Tricky Master",y:1999,roles:["act"],db:6.9,imdb:6.2,cast:"周星驰、吴君如、张家辉",plot:"赌术题材喜剧，周星驰饰演千王传人，与各路高手斗智斗法。"},
+ {t:"少林足球",e:"Shaolin Soccer",y:2001,roles:["act","dir","wri"],db:8.5,imdb:7.3,cast:"周星驰、赵薇、吴孟达、黄一飞",plot:"把少林功夫与足球结合的天才创意。落魄师兄弟组队圆梦，特效与热血齐飞，横扫香港票房纪录，星爷走向国际。"},
+ {t:"功夫",e:"Kung Fu Hustle",y:2004,roles:["act","dir","wri"],db:8.8,imdb:7.8,cast:"周星驰、元秋、元华、黄圣依",plot:"猪笼城寨里的绝世高手与小人物的觉醒。融合CG与传统武术的东方超级英雄史诗，星爷享誉全球的封神之作。"},
+ {t:"长江七号",e:"CJ7",y:2008,roles:["act","dir","wri","pro"],db:7.2,imdb:6.6,cast:"周星驰、徐娇、张雨绮",plot:"贫困父亲与儿子捡到外星生物「七仔」。星爷转向温情亲情题材，父爱如山，笑中含泪。"},
+ {t:"西游·降魔篇",e:"Journey to the West: Conquering the Demons",y:2013,roles:["dir","wri","pro"],db:7.1,imdb:6.5,cast:"文章、舒淇、黄渤、罗志祥",plot:"周星驰编导监制。驱魔人陈玄奘的成长与「大爱」的领悟，重构西游前传。「一万年」的爱情令人唏嘘，票房口碑双收。"},
+ {t:"美人鱼",e:"The Mermaid",y:2016,roles:["dir","wri","pro"],db:6.9,imdb:6.3,cast:"邓超、林允、张雨绮、罗志祥",plot:"周星驰编导监制。人鱼与富商的爱情包裹着环保寓言。以超33亿刷新当时中国影史票房纪录，尽显星氏浪漫与悲悯。"},
+ {t:"西游·伏妖篇",e:"Journey to the West: The Demons Strike Back",y:2017,roles:["wri","pro"],db:5.5,imdb:5.5,cast:"吴亦凡、林更新、姚晨、林允",plot:"周星驰编剧监制、徐克执导。师徒四人西行取经再遇群妖，视觉奇观与暗黑想象力交织。"},
+ {t:"新喜剧之王",e:"The New King of Comedy",y:2019,roles:["dir","wri","pro"],db:5.7,imdb:5.5,cast:"王宝强、鄂靖文、张全蛋",plot:"周星驰编导监制。二十年后重述龙套梦想，致敬《喜剧之王》。小人物如梦追梦，「努力，奋斗」再度回响。"},
+ {t:"美人鱼2",e:"The Mermaid 2",y:2023,roles:["dir","wri","pro"],db:null,imdb:null,cast:"林允、李宇春 等",plot:"周星驰执导的《美人鱼》续集，已完成拍摄，尚待正式公映。星迷翘首以盼星爷的又一次归来。"},
+ {t:"功夫女足",e:"Kung Fu Women's Soccer",y:2026,roles:["dir","wri","pro"],db:null,imdb:null,cast:"星辉海选新人 等（待定）",plot:"星爷备受期待的全新力作，被视为《少林足球》的精神续集——这一次，把功夫与热血写给绿茵场上的女足姑娘们。「努力，奋斗」的星氏励志再度启程。（筹备 / 制作中，尚未正式公映，详情以官方为准。）"}
+];
 
-// ============================================================
-// Starfield background
-// ============================================================
-(function stars() {
-  const c = document.getElementById('stars');
-  const ctx = c.getContext('2d');
-  let W, H, stars;
-  function resize() {
-    W = c.width = innerWidth * devicePixelRatio;
-    H = c.height = innerHeight * devicePixelRatio;
-    stars = Array.from({ length: 220 }, () => ({
-      x: Math.random() * W, y: Math.random() * H,
-      r: Math.random() * 1.4 + 0.2,
-      a: Math.random() * 0.6 + 0.2,
-      tw: Math.random() * 0.02 + 0.003
-    }));
-  }
-  resize(); addEventListener('resize', resize);
-  let t = 0;
-  (function loop() {
-    t += 0.016;
-    ctx.clearRect(0, 0, W, H);
-    for (const s of stars) {
-      const a = s.a + Math.sin(t * 2 + s.x) * 0.25;
-      ctx.fillStyle = `rgba(180,200,255,${Math.max(0, a)})`;
-      ctx.beginPath();
-      ctx.arc(s.x, s.y, s.r * devicePixelRatio, 0, Math.PI * 2);
-      ctx.fill();
-    }
-    requestAnimationFrame(loop);
-  })();
-})();
+/* ---------- palette per film (deterministic) ---------- */
+const PALS=[["#7c2d12","#b91c1c"],["#312e81","#6d28d9"],["#0f766e","#065f46"],["#9a3412","#c2410c"],["#831843","#be123c"],["#1e3a8a","#1d4ed8"],["#4c1d95","#7e22ce"],["#134e4a","#0f766e"],["#7c2d12","#9a3412"],["#3b0764","#a21caf"],["#0c4a6e","#0369a1"],["#713f12","#a16207"]];
+function pal(s){let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))>>>0;return PALS[h%PALS.length];}
+const ROLE_META={act:["r-act","演员"],dir:["r-dir","导演"],wri:["r-wri","编剧"],pro:["r-pro","监制"],tv:["r-tv","电视剧"]};
 
-// ============================================================
-// Rising particles (money / sparks)
-// ============================================================
-(function particles() {
-  const c = document.getElementById('particles');
-  const ctx = c.getContext('2d');
-  let W, H, items = [];
-  function resize() {
-    W = c.width = innerWidth * devicePixelRatio;
-    H = c.height = innerHeight * devicePixelRatio;
-  }
-  resize(); addEventListener('resize', resize);
-
-  function spawn() {
-    items.push({
-      x: Math.random() * W,
-      y: H + 20,
-      vy: -rand(0.6, 2.2) * devicePixelRatio,
-      vx: rand(-0.2, 0.2) * devicePixelRatio,
-      r: rand(1, 3) * devicePixelRatio,
-      a: rand(0.3, 1),
-      hue: Math.random() < 0.7 ? 0 : 45,
-      life: 0,
-      max: rand(300, 700)
-    });
-  }
-  setInterval(spawn, 60);
-
-  (function loop() {
-    ctx.clearRect(0, 0, W, H);
-    for (let i = items.length - 1; i >= 0; i--) {
-      const p = items[i];
-      p.life++; p.x += p.vx; p.y += p.vy;
-      const t = p.life / p.max;
-      const a = p.a * (1 - t);
-      if (t >= 1 || p.y < -20) { items.splice(i, 1); continue; }
-      const color = p.hue === 0
-        ? `rgba(255,80,100,${a})`
-        : `rgba(255,210,76,${a})`;
-      ctx.fillStyle = color;
-      ctx.shadowColor = color;
-      ctx.shadowBlur = 12 * devicePixelRatio;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fill();
-    }
-    ctx.shadowBlur = 0;
-    requestAnimationFrame(loop);
-  })();
-})();
-
-// ============================================================
-// Fireworks (on breakthrough)
-// ============================================================
-const Fireworks = (function () {
-  const c = document.getElementById('fireworks');
-  const ctx = c.getContext('2d');
-  let W, H, parts = [], active = false;
-  function resize() {
-    W = c.width = innerWidth * devicePixelRatio;
-    H = c.height = innerHeight * devicePixelRatio;
-  }
-  resize(); addEventListener('resize', resize);
-
-  function burst(x, y, hue) {
-    const n = 90;
-    for (let i = 0; i < n; i++) {
-      const ang = (Math.PI * 2 * i) / n + Math.random() * 0.1;
-      const sp = rand(2, 7) * devicePixelRatio;
-      parts.push({
-        x, y,
-        vx: Math.cos(ang) * sp,
-        vy: Math.sin(ang) * sp,
-        g: 0.06 * devicePixelRatio,
-        life: 0,
-        max: rand(60, 110),
-        hue: hue + rand(-15, 15),
-        r: rand(1.5, 3) * devicePixelRatio
-      });
-    }
-  }
-
-  function loop() {
-    if (!active && parts.length === 0) {
-      ctx.clearRect(0, 0, W, H);
-      requestAnimationFrame(loop);
-      return;
-    }
-    ctx.fillStyle = 'rgba(4,6,15,0.18)';
-    ctx.fillRect(0, 0, W, H);
-    for (let i = parts.length - 1; i >= 0; i--) {
-      const p = parts[i];
-      p.life++; p.vy += p.g;
-      p.x += p.vx; p.y += p.vy;
-      const a = 1 - p.life / p.max;
-      if (a <= 0) { parts.splice(i, 1); continue; }
-      ctx.fillStyle = `hsla(${p.hue}, 100%, 60%, ${a})`;
-      ctx.shadowColor = ctx.fillStyle;
-      ctx.shadowBlur = 16 * devicePixelRatio;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fill();
-    }
-    ctx.shadowBlur = 0;
-    requestAnimationFrame(loop);
-  }
-  loop();
-
-  return {
-    start() {
-      active = true;
-      c.classList.add('show');
-      const hues = [0, 15, 45, 350];
-      let i = 0;
-      const id = setInterval(() => {
-        const x = rand(W * 0.15, W * 0.85);
-        const y = rand(H * 0.15, H * 0.55);
-        burst(x, y, hues[i++ % hues.length]);
-      }, 220);
-      // keep firing
-      this._id = id;
-    },
-    stop() {
-      active = false;
-      clearInterval(this._id);
-      setTimeout(() => c.classList.remove('show'), 1000);
-    }
-  };
-})();
-
-// ============================================================
-// Chart generation
-// ============================================================
-function buildChart() {
-  const svg = document.getElementById('chart');
-  const gridG = document.getElementById('grid');
-  const candlesG = document.getElementById('candles');
-  const linePath = document.getElementById('line');
-  const areaPath = document.getElementById('area');
-
-  // y range: 4000 ~ 10500
-  const yMin = 4000, yMax = 10500;
-  const w = 800, h = 500;
-  const toY = v => h - ((v - yMin) / (yMax - yMin)) * (h - 30) - 10;
-
-  // y grid labels
-  const labels = [5000, 6000, 7000, 8000, 9000, 10000];
-  labels.forEach(v => {
-    const y = toY(v);
-    const ln = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    ln.setAttribute('class', 'grid-line');
-    ln.setAttribute('x1', 0); ln.setAttribute('x2', 800);
-    ln.setAttribute('y1', y); ln.setAttribute('y2', y);
-    gridG.appendChild(ln);
-    const tx = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    tx.setAttribute('class', 'axis-text');
-    tx.setAttribute('x', 770); tx.setAttribute('y', y - 4);
-    tx.setAttribute('text-anchor', 'end');
-    tx.textContent = '¥ ' + v.toLocaleString();
-    gridG.appendChild(tx);
-  });
-
-  // synthesize 80 candles: starts ~4200, ends >10000 with strong uptrend & noise
-  const N = 80;
-  const candles = [];
-  let price = 4200;
-  for (let i = 0; i < N; i++) {
-    const trend = 75 + i * 0.6;       // accelerating uptrend
-    const noise = (Math.random() - 0.45) * 240;
-    const open = price;
-    const close = Math.max(3800, price + trend + noise);
-    const high = Math.max(open, close) + Math.random() * 120;
-    const low  = Math.min(open, close) - Math.random() * 120;
-    candles.push({ open, close, high, low });
-    price = close;
-  }
-  // force last candle to break 10000 clearly
-  candles[N - 1].open  = 9612;
-  candles[N - 1].close = 10128.88;
-  candles[N - 1].high  = 10180;
-  candles[N - 1].low   = 9580.5;
-
-  const cw = (w - 40) / N;
-  // draw candles with staggered animation
-  candles.forEach((c, i) => {
-    const x = 20 + i * cw + cw / 2;
-    const up = c.close >= c.open;
-    const color = up ? '#ff2d4a' : '#36d399';
-
-    // wick
-    const wick = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    wick.setAttribute('x1', x); wick.setAttribute('x2', x);
-    wick.setAttribute('y1', toY(c.high)); wick.setAttribute('y2', toY(c.low));
-    wick.setAttribute('stroke', color);
-    wick.setAttribute('stroke-width', 1);
-    wick.setAttribute('class', 'candle');
-    wick.style.animationDelay = (i * 0.03) + 's';
-    candlesG.appendChild(wick);
-
-    // body
-    const yTop = toY(Math.max(c.open, c.close));
-    const yBot = toY(Math.min(c.open, c.close));
-    const body = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-    body.setAttribute('x', x - cw * 0.32);
-    body.setAttribute('y', yTop);
-    body.setAttribute('width', cw * 0.64);
-    body.setAttribute('height', Math.max(1, yBot - yTop));
-    body.setAttribute('fill', color);
-    body.setAttribute('opacity', up ? 0.9 : 0.85);
-    body.setAttribute('class', 'candle');
-    body.style.animationDelay = (i * 0.03) + 's';
-    candlesG.appendChild(body);
-  });
-
-  // close-price line + area
-  let d = '';
-  let dArea = '';
-  candles.forEach((c, i) => {
-    const x = 20 + i * cw + cw / 2;
-    const y = toY(c.close);
-    d += (i === 0 ? `M${x},${y}` : ` L${x},${y}`);
-    dArea += (i === 0 ? `M${x},${h} L${x},${y}` : ` L${x},${y}`);
-  });
-  dArea += ` L${20 + (N - 1) * cw + cw / 2},${h} Z`;
-  linePath.setAttribute('d', d);
-  areaPath.setAttribute('d', dArea);
-
-  // marker position = last close
-  const lastX = 20 + (N - 1) * cw + cw / 2;
-  const lastY = toY(candles[N - 1].close);
-  const hit = document.getElementById('hit');
-  hit.setAttribute('cx', lastX);
-  hit.setAttribute('cy', lastY);
-}
-
-// ============================================================
-// Animated price (rolling digits)
-// ============================================================
-function setRollingPrice(target) {
-  // target like 10128.88
-  const str = target.toFixed(2);
-  const priceEl = document.getElementById('price');
-  priceEl.innerHTML = '';
-  for (const ch of str) {
-    if (ch === '.') {
-      const dot = document.createElement('span');
-      dot.className = 'dot';
-      dot.textContent = '.';
-      priceEl.appendChild(dot);
-    } else if (ch === ',') {
-      const c = document.createElement('span');
-      c.className = 'dot'; c.textContent = ',';
-      priceEl.appendChild(c);
-    } else {
-      const slot = document.createElement('span');
-      slot.className = 'digit-roll';
-      const col = document.createElement('span');
-      col.className = 'col';
-      for (let i = 0; i <= 9; i++) {
-        const s = document.createElement('span');
-        s.textContent = i;
-        col.appendChild(s);
-      }
-      slot.appendChild(col);
-      priceEl.appendChild(slot);
-      // animate to digit ch
-      requestAnimationFrame(() => {
-        const target = parseInt(ch, 10);
-        // start with random spin then settle
-        const spins = 2;
-        col.style.transform = `translateY(-${(spins * 10 + target)}em)`;
-        col.addEventListener('transitionend', function once() {
-          col.style.transition = 'none';
-          col.style.transform = `translateY(-${target}em)`;
-          col.removeEventListener('transitionend', once);
-          setTimeout(() => { col.style.transition = ''; }, 20);
-        }, { once: true });
-      });
-    }
-  }
-}
-
-// ============================================================
-// Number ticker for delta / pct
-// ============================================================
-function animateNumber(el, from, to, dur, formatter) {
-  const start = performance.now();
-  function frame(t) {
-    const k = Math.min(1, (t - start) / dur);
-    const eased = 1 - Math.pow(1 - k, 3);
-    const v = from + (to - from) * eased;
-    el.textContent = formatter(v);
-    if (k < 1) requestAnimationFrame(frame);
-  }
-  requestAnimationFrame(frame);
-}
-
-// ============================================================
-// Clock
-// ============================================================
-(function clock() {
-  const el = document.getElementById('now');
-  setInterval(() => {
-    const d = new Date();
-    const pad = n => String(n).padStart(2, '0');
-    el.textContent = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}  ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
-  }, 500);
-})();
-
-// ============================================================
-// Ticker bar
-// ============================================================
-(function ticker() {
-  const items = [
-    ['寒武纪', '10128.88', '+5.37%', 'up'],
-    ['英伟达', '1432.10', '+2.18%', 'up'],
-    ['中芯国际', '128.40', '+3.21%', 'up'],
-    ['海光信息', '186.55', '+4.06%', 'up'],
-    ['澜起科技', '92.30', '+1.85%', 'up'],
-    ['北方华创', '486.21', '+2.74%', 'up'],
-    ['上证指数', '3812.55', '+1.06%', 'up'],
-    ['科创50', '1124.66', '+2.41%', 'up'],
-    ['美元/人民币', '7.0832', '-0.12%', 'down'],
-    ['黄金', '2618.40', '+0.84%', 'up']
+/* ---------- build stats ---------- */
+function buildStats(){
+  const years=FILMS.map(f=>f.y);
+  const stats=[
+    [FILMS.length,"部 作品收录"],
+    [FILMS.filter(f=>f.roles.includes("act")).length,"部 亲自出演"],
+    [FILMS.filter(f=>f.roles.includes("dir")).length,"部 执导筒"],
+    [(Math.max(...years)-Math.min(...years)),"载 光影岁月"],
   ];
-  const html = items.map(([n, p, c, d]) =>
-    `<span class="item"><b>${n}</b> ${p} <span class="${d}">${c}</span></span>`
-  ).join('');
-  document.getElementById('ticker').innerHTML = html + html;
-})();
-
-// ============================================================
-// Main sequence
-// ============================================================
-function runSequence() {
-  buildChart();
-
-  // animate header price
-  setTimeout(() => setRollingPrice(10128.88), 200);
-
-  const deltaEl = document.getElementById('delta');
-  const pctEl = document.getElementById('pct');
-  animateNumber(deltaEl, 0, 516.88, 2200, v => '+' + v.toFixed(2));
-  animateNumber(pctEl, 0, 5.37, 2200, v => '+' + v.toFixed(2) + '%');
-
-  // breakthrough banner + fireworks at ~4.2s (after line draws)
-  setTimeout(() => {
-    document.getElementById('banner').classList.add('show');
-    Fireworks.start();
-    setTimeout(() => Fireworks.stop(), 5200);
-  }, 4000);
-
-  // loop the breakthrough banner every ~14s for ambience
-  setInterval(() => {
-    const b = document.getElementById('banner');
-    b.classList.remove('show');
-    void b.offsetWidth;
-    b.classList.add('show');
-    Fireworks.start();
-    setTimeout(() => Fireworks.stop(), 5000);
-  }, 16000);
+  document.getElementById("stats").innerHTML=stats.map(s=>
+    `<div class="stat"><div class="num" data-to="${s[0]}">0</div><div class="lbl">${s[1]}</div></div>`).join("");
 }
 
-document.getElementById('startBtn').addEventListener('click', () => {
-  document.getElementById('intro').classList.add('hide');
-  runSequence();
+/* ---------- 原创 SVG 封面场景（手绘矢量，按剧情主题） ---------- */
+function sceneFor(f){
+  const s=f.t+f.e+f.plot;
+  if(/女足|足球/.test(s))return "sport";
+  if(/美人鱼/.test(s))return "ocean";
+  if(/长江七号|七仔|外星/.test(s))return "alien";
+  if(/凌凌漆|密探|特工|逃学威龙|咖喱辣椒|警|龙在天涯/.test(s))return "city";
+  if(/赌|千王/.test(s))return "gamble";
+  if(/食神|牛丸|厨/.test(s))return "food";
+  if(/功夫|精武|武状元|苏乞儿|拳|少林|破坏之王/.test(s))return "kungfu";
+  if(/西游|降魔|伏妖|大话|月光宝盒|大圣|悟空/.test(s))return "west";
+  if(/回魂|撞鬼|鬼/.test(s))return "ghost";
+  if(/审死官|芝麻官|算死草|讼师|状师|唐伯虎|鹿鼎记|济公|罗汉|大内密探/.test(s))return "court";
+  if(/喜事|贺岁|豪门夜宴|群星|情圣|整蛊/.test(s))return "festive";
+  if(/喜剧之王|龙套/.test(s))return "stage";
+  if(/430|穿梭机|盖世豪侠|他来自江湖|电视/.test(s))return "tv";
+  return "cinema";
+}
+const SCENES={
+ sport:`<rect x="0" y="118" width="300" height="102" fill="#2f9e44" opacity=".28"/><ellipse cx="150" cy="215" rx="150" ry="34" fill="#2f9e44" opacity=".3"/><path d="M30,70 Q150,110 270,70" stroke="#fff" stroke-width="2" fill="none" opacity=".4"/><circle cx="150" cy="96" r="34" fill="#f6f6f6"/><polygon points="150,74 163,84 158,100 142,100 137,84" fill="#161616"/><g stroke="#161616" stroke-width="2" fill="none"><path d="M150,62 V74 M116,96 l21,4 M184,96 l-21,4 M133,124 l9,-14 M167,124 l-9,-14"/></g><g fill="#ffcf40"><circle cx="60" cy="55" r="2"/><circle cx="245" cy="50" r="2"/></g>`,
+ ocean:`<circle cx="230" cy="52" r="24" fill="#ffe694" opacity=".9"/><path d="M110,118 q34,-46 60,-8 q-6,26 -28,36 q12,-30 -24,-30 Z" fill="#ffcf40" opacity=".85"/><path d="M0,150 q75,-28 150,0 t150,0 V220 H0 Z" fill="#1d4ed8" opacity=".35"/><path d="M0,176 q75,-24 150,0 t150,0 V220 H0 Z" fill="#0ea5e9" opacity=".4"/><g fill="#fff" opacity=".6"><circle cx="86" cy="128" r="3"/><circle cx="102" cy="150" r="2"/><circle cx="76" cy="162" r="2.5"/></g>`,
+ kungfu:`<circle cx="150" cy="72" r="40" fill="#ffcf40" opacity=".85"/><path d="M0,205 L70,120 L120,178 L175,110 L240,182 L300,132 V220 H0 Z" fill="#101014" opacity=".5"/><circle cx="150" cy="112" r="10" fill="#101014" opacity=".7"/><g stroke="#101014" stroke-width="4" fill="none" opacity=".7" stroke-linecap="round"><path d="M150,122 V162 M150,134 l-24,14 M150,134 l24,14 M150,162 l-16,34 M150,162 l16,34"/></g>`,
+ gamble:`<g transform="rotate(-14 118 118)"><rect x="82" y="70" width="72" height="98" rx="9" fill="#fbfbfb"/><path d="M118,96 q16,10 0,30 q-16,-20 0,-30 Z" fill="#e63946"/></g><g transform="rotate(12 196 122)"><rect x="162" y="80" width="72" height="98" rx="9" fill="#fbfbfb"/><path d="M198,110 q16,14 0,30 q-16,-16 0,-30 Z" fill="#161616"/><rect x="194" y="150" width="8" height="8" fill="#161616"/></g><g transform="rotate(18 150 176)"><rect x="138" y="160" width="30" height="30" rx="5" fill="#e63946"/><g fill="#fff"><circle cx="147" cy="169" r="2.6"/><circle cx="159" cy="181" r="2.6"/><circle cx="153" cy="175" r="2.6"/></g></g>`,
+ food:`<g stroke="#ffcf40" stroke-width="4" fill="none" opacity=".7" stroke-linecap="round"><path d="M122,104 q-10,-20 6,-38"/><path d="M150,98 q-10,-22 6,-40"/><path d="M178,104 q-10,-20 6,-38"/></g><ellipse cx="150" cy="150" rx="74" ry="20" fill="#fafafa"/><path d="M78,150 q72,46 144,0 Z" fill="#e6e6e6"/><ellipse cx="150" cy="150" rx="74" ry="18" fill="#c8c8c8" opacity=".5"/><line x1="196" y1="86" x2="150" y2="150" stroke="#7c2d12" stroke-width="4" stroke-linecap="round"/><line x1="210" y1="92" x2="164" y2="150" stroke="#7c2d12" stroke-width="4" stroke-linecap="round"/>`,
+ court:`<path d="M14,74 Q150,18 286,74 L268,74 Q150,34 32,74 Z" fill="#b91c1c" opacity=".85"/><rect x="30" y="74" width="240" height="14" fill="#7c2d12"/><path d="M22,74 Q150,44 278,74" fill="none" stroke="#ffcf40" stroke-width="3"/><g><line x1="72" y1="90" x2="72" y2="110" stroke="#7c2d12" stroke-width="2"/><ellipse cx="72" cy="126" rx="15" ry="18" fill="#e63946"/><path d="M72,144 v8" stroke="#ffcf40" stroke-width="2"/></g><g><line x1="228" y1="90" x2="228" y2="110" stroke="#7c2d12" stroke-width="2"/><ellipse cx="228" cy="126" rx="15" ry="18" fill="#e63946"/><path d="M228,144 v8" stroke="#ffcf40" stroke-width="2"/></g><rect x="122" y="150" width="56" height="70" rx="4" fill="#7c2d12" opacity=".55"/>`,
+ west:`<circle cx="150" cy="80" r="44" fill="#ffe694" opacity=".9"/><g fill="#fff" opacity=".22"><ellipse cx="72" cy="150" rx="34" ry="12"/><ellipse cx="100" cy="140" rx="24" ry="10"/><ellipse cx="230" cy="160" rx="34" ry="12"/></g><line x1="92" y1="58" x2="212" y2="182" stroke="#ffcf40" stroke-width="6" stroke-linecap="round"/><circle cx="150" cy="118" r="10" fill="#101014" opacity=".7"/><g stroke="#101014" stroke-width="4" fill="none" opacity=".7" stroke-linecap="round"><path d="M150,128 V166 M150,140 l-20,12 M150,140 l20,12 M150,166 l-14,30 M150,166 l14,30"/></g>`,
+ alien:`<g fill="#fff"><circle cx="60" cy="46" r="1.6"/><circle cx="110" cy="30" r="1.4"/><circle cx="245" cy="40" r="1.6"/><circle cx="200" cy="60" r="1.3"/><circle cx="40" cy="90" r="1.3"/></g><ellipse cx="150" cy="92" rx="48" ry="15" fill="#c9a3ff" opacity=".85"/><path d="M124,88 q26,-30 52,0 Z" fill="#8b5cf6" opacity=".9"/><g fill="#ffe694"><circle cx="128" cy="96" r="3"/><circle cx="150" cy="99" r="3"/><circle cx="172" cy="96" r="3"/></g><g transform="translate(150,158)"><ellipse cx="0" cy="0" rx="20" ry="22" fill="#a0f0c0" opacity=".85"/><circle cx="-7" cy="-4" r="4" fill="#101014"/><circle cx="7" cy="-4" r="4" fill="#101014"/></g>`,
+ ghost:`<circle cx="228" cy="52" r="22" fill="#ffe694" opacity=".75"/><path d="M110,92 q40,0 40,40 v52 l-10,-9 -10,9 -10,-9 -10,9 -10,-9 -10,9 V132 q0,-40 40,-40 Z" fill="#fff" opacity=".85"/><g fill="#101014"><circle cx="120" cy="126" r="4.5"/><circle cx="142" cy="126" r="4.5"/></g><path d="M116,142 q10,8 20,0" stroke="#101014" stroke-width="2" fill="none"/>`,
+ city:`<circle cx="238" cy="50" r="18" fill="#ffe694" opacity=".7"/><g fill="#0c0c14" opacity=".55"><rect x="18" y="120" width="30" height="100"/><rect x="58" y="92" width="34" height="128"/><rect x="102" y="140" width="26" height="80"/><rect x="148" y="70" width="40" height="150"/><rect x="200" y="112" width="30" height="108"/><rect x="242" y="96" width="34" height="124"/></g><g fill="#ffcf40" opacity=".8"><rect x="160" y="84" width="5" height="6"/><rect x="172" y="84" width="5" height="6"/><rect x="160" y="98" width="5" height="6"/><rect x="66" y="104" width="5" height="6"/><rect x="78" y="104" width="5" height="6"/><rect x="250" y="110" width="5" height="6"/><rect x="262" y="110" width="5" height="6"/><rect x="28" y="132" width="5" height="6"/></g>`,
+ festive:`<g stroke="#ffcf40" stroke-width="2" opacity=".8"><g transform="translate(80,64)"><line x1="0" y1="-18" x2="0" y2="-8"/><line x1="0" y1="18" x2="0" y2="8"/><line x1="-18" y1="0" x2="-8" y2="0"/><line x1="18" y1="0" x2="8" y2="0"/><line x1="-13" y1="-13" x2="-6" y2="-6"/><line x1="13" y1="13" x2="6" y2="6"/><line x1="-13" y1="13" x2="-6" y2="6"/><line x1="13" y1="-13" x2="6" y2="-6"/></g><g transform="translate(224,58) scale(.8)"><line x1="0" y1="-18" x2="0" y2="-8"/><line x1="0" y1="18" x2="0" y2="8"/><line x1="-18" y1="0" x2="-8" y2="0"/><line x1="18" y1="0" x2="8" y2="0"/></g></g><g><line x1="150" y1="94" x2="150" y2="110" stroke="#7c2d12" stroke-width="2"/><ellipse cx="150" cy="130" rx="20" ry="24" fill="#e63946"/><path d="M150,154 v8" stroke="#ffcf40" stroke-width="3"/><rect x="138" y="122" width="24" height="16" fill="#ffcf40" opacity=".3"/></g>`,
+ stage:`<path d="M150,32 L112,214 L188,214 Z" fill="#ffe694" opacity=".22"/><circle cx="150" cy="30" r="11" fill="#ffcf40"/><ellipse cx="150" cy="210" rx="60" ry="12" fill="#101014" opacity=".5"/><circle cx="150" cy="132" r="12" fill="#101014" opacity=".7"/><g stroke="#101014" stroke-width="4" fill="none" opacity=".7" stroke-linecap="round"><path d="M150,144 V184 M150,156 l-18,14 M150,156 l18,14 M150,184 l-14,26 M150,184 l14,26"/></g><g fill="#ffcf40"><circle cx="60" cy="60" r="2"/><circle cx="240" cy="66" r="2"/><circle cx="210" cy="44" r="1.6"/></g>`,
+ tv:`<rect x="66" y="66" width="168" height="116" rx="14" fill="#0c0c14" opacity=".65"/><rect x="80" y="80" width="126" height="88" rx="8" fill="#1d4ed8" opacity=".45"/><g stroke="#fff" opacity=".15"><line x1="80" y1="92" x2="206" y2="92"/><line x1="80" y1="108" x2="206" y2="108"/><line x1="80" y1="124" x2="206" y2="124"/><line x1="80" y1="140" x2="206" y2="140"/><line x1="80" y1="156" x2="206" y2="156"/></g><circle cx="220" cy="100" r="6" fill="#ffcf40"/><circle cx="220" cy="120" r="6" fill="#e63946"/><circle cx="220" cy="140" r="6" fill="#2f9e44"/><path d="M120,66 L96,40 M150,66 L168,38" stroke="#c9c9c9" stroke-width="3" fill="none"/>`,
+ cinema:`<g opacity=".18" stroke="#fff"><path d="M150,110 L30,40 M150,110 L110,20 M150,110 L190,20 M150,110 L270,40 M150,110 L40,180 M150,110 L260,180"/></g><g transform="translate(150,104)"><polygon points="0,-40 12,-13 40,-13 17,4 26,32 0,15 -26,32 -17,4 -40,-13 -12,-13" fill="#ffcf40" opacity=".9"/></g><g fill="#fff" opacity=".5"><circle cx="60" cy="60" r="2"/><circle cx="245" cy="52" r="2"/><circle cx="215" cy="150" r="1.8"/><circle cx="70" cy="150" r="1.8"/></g>`
+};
+function buildArt(f){
+  return `<svg viewBox="0 0 300 220" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">${SCENES[sceneFor(f)]||SCENES.cinema}</svg>`;
+}
+
+/* ---------- render films ---------- */
+function rate(f){
+  const db = f.db!=null?`<div class="rate db"><small>豆瓣</small><span class="v">${f.db.toFixed(1)}</span></div>`
+                       :`<div class="rate na"><small>豆瓣</small><span class="v">暂无</span></div>`;
+  const im = f.imdb!=null?`<div class="rate imdb"><small>IMDb</small><span class="v">${f.imdb.toFixed(1)}</span></div>`
+                         :`<div class="rate na"><small>IMDb</small><span class="v">暂无</span></div>`;
+  return db+im;
+}
+function render(filter){
+  const app=document.getElementById("app");
+  const shown=FILMS.filter(f=>filter==="all"||f.roles.includes(filter));
+  // group by year
+  const byYear={};
+  shown.forEach(f=>{(byYear[f.y]=byYear[f.y]||[]).push(f);});
+  const yearsDesc=Object.keys(byYear).map(Number).sort((a,b)=>b-a);
+  const minY=shown.length?Math.min(...shown.map(f=>f.y)):"";
+  const maxY=shown.length?Math.max(...shown.map(f=>f.y)):"";
+  document.getElementById("countNote").textContent=`共 ${shown.length} 部 · ${shown.length?minY+" – "+maxY:""}`;
+  app.innerHTML=yearsDesc.map(y=>`
+    <section class="era">
+      <div class="era-year"><div class="y">${y}</div><div class="bar"></div></div>
+      <div class="grid">
+        ${byYear[y].map(f=>{
+          const p=pal(f.t);
+          const roles=f.roles.map(r=>`<span class="rtag ${ROLE_META[r][0]}">${ROLE_META[r][1]}</span>`).join("");
+          return `<article class="card" style="--pa:${p[0]};--pb:${p[1]}">
+            <div class="poster">
+              <div class="art">${buildArt(f)}</div>
+              <div class="scrim"></div>
+              <div class="perf t"></div><div class="perf b"></div>
+              <div class="pyear">${f.y}</div>
+              <div class="roles">${roles}</div>
+              <div class="pt">${f.t}</div>
+              <div class="peng">${f.e}</div>
+            </div>
+            <div class="cbody">
+              <div class="ratings">${rate(f)}</div>
+              <div class="cast"><b>主演 · </b>${f.cast}</div>
+              <div class="plot">${f.plot}</div>
+            </div>
+          </article>`;
+        }).join("")}
+      </div>
+    </section>`).join("");
+  observe();
+}
+
+/* ---------- scroll reveal ---------- */
+let io;
+function observe(){
+  if(io)io.disconnect();
+  io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target);}});},{threshold:.12});
+  document.querySelectorAll(".card").forEach((c,i)=>{c.style.transitionDelay=(i%8)*40+"ms";io.observe(c);});
+}
+
+/* ---------- count-up ---------- */
+function countUp(){
+  document.querySelectorAll(".num").forEach(el=>{
+    const to=+el.dataset.to;let n=0;const step=Math.max(1,Math.round(to/40));
+    const t=setInterval(()=>{n+=step;if(n>=to){n=to;clearInterval(t);}el.textContent=n;},28);
+  });
+}
+
+/* ---------- filters ---------- */
+document.getElementById("controls").addEventListener("click",e=>{
+  const b=e.target.closest(".filterbtn");if(!b)return;
+  document.querySelectorAll(".filterbtn").forEach(x=>x.classList.remove("active"));
+  b.classList.add("active");render(b.dataset.f);
 });
 
-// auto-start after 6s if user idles
-setTimeout(() => {
-  if (!document.getElementById('intro').classList.contains('hide')) {
-    document.getElementById('startBtn').click();
+/* ---------- starfield ---------- */
+(function(){
+  const cv=document.getElementById("stars"),ctx=cv.getContext("2d");let w,h,stars;
+  function resize(){w=cv.width=innerWidth;h=cv.height=innerHeight;stars=Array.from({length:Math.min(160,Math.floor(w*h/12000))},()=>({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.6+.3,a:Math.random(),s:Math.random()*.5+.1,tw:Math.random()*.02+.005}));}
+  function tick(){ctx.clearRect(0,0,w,h);for(const st of stars){st.a+=st.tw;const al=.35+Math.abs(Math.sin(st.a))*.6;ctx.beginPath();ctx.arc(st.x,st.y,st.r,0,7);ctx.fillStyle=`rgba(255,225,150,${al})`;ctx.fill();st.y+=st.s;if(st.y>h){st.y=0;st.x=Math.random()*w;}}requestAnimationFrame(tick);}
+  addEventListener("resize",resize);resize();tick();
+})();
+
+/* ---------- back to top ---------- */
+const toTop=document.getElementById("toTop");
+addEventListener("scroll",()=>{toTop.classList.toggle("show",scrollY>600);});
+toTop.onclick=()=>scrollTo({top:0,behavior:"smooth"});
+
+/* =========================================================
+   背景音乐 —— 原创怀旧五声音阶主题（Web Audio API 实时演奏）
+   致敬星爷电影的悠远意境，无外部文件、无版权顾虑
+========================================================= */
+const Music=(()=>{
+  let ctx,master,voiceBus,lp,delay,fb,timer,loopStartTime,schedIdx=0,inited=false,playing=false,wantOn=true,gestureArmed=false;
+  const BPM=64, beat=60/BPM;
+  const SEMI={C:0,D:2,E:4,F:5,G:7,A:9,B:11};
+  const NF=n=>{const L=n[0],sharp=n.includes("#")?1:0,oct=+n.slice(-1);const midi=(oct+1)*12+SEMI[L]+sharp;return 440*Math.pow(2,(midi-69)/12);};
+  // 原创中国风旋律（C 宫五声：C D E G A），古筝音色，[音名, 拍数] —— 共 40 拍
+  const MEL=[
+    ["E4",1],["G4",1],["A4",1],["G4",1], ["E4",2],["D4",2],
+    ["E4",1],["G4",1],["A4",2],          ["C5",2],["A4",1],["G4",1],
+    ["A4",1],["C5",1],["D5",1],["C5",1], ["A4",2],["G4",2],
+    ["E4",1],["G4",1],["A4",2],          ["G4",1],["E4",1],["D4",2],
+    ["C4",1],["D4",1],["E4",2],          ["G4",4]
+  ];
+  // 低音铺底，每 4 拍一个根音 —— 共 40 拍
+  const BASS=[["C3",4],["A2",4],["G2",4],["A2",4],["C3",4],["F2",4],["G2",4],["E2",4],["A2",4],["G2",4]];
+  let EV=[],loopLen=0;
+  function build(){
+    let t=0; MEL.forEach(([n,b])=>{EV.push({t,f:NF(n),d:b*beat*0.94,k:"m"});t+=b*beat;}); loopLen=t;
+    let tb=0; BASS.forEach(([n,b])=>{EV.push({t:tb,f:NF(n),d:b*beat*0.98,k:"b"});tb+=b*beat;});
+    EV.sort((a,b)=>a.t-b.t);
   }
-}, 6000);
+  function graph(){
+    master=ctx.createGain(); master.gain.value=0;
+    lp=ctx.createBiquadFilter(); lp.type="lowpass"; lp.frequency.value=2100; lp.Q.value=.3;
+    voiceBus=ctx.createGain(); voiceBus.gain.value=1;
+    delay=ctx.createDelay(); delay.delayTime.value=0.34; fb=ctx.createGain(); fb.gain.value=0.26;
+    voiceBus.connect(lp); lp.connect(master);
+    lp.connect(delay); delay.connect(fb); fb.connect(delay); delay.connect(master);
+    master.connect(ctx.destination);
+  }
+  // 古筝式拨弦音色：快速起音 + 长余韵衰减 + 八度泛音
+  function voice(f,w,dur){
+    const g=ctx.createGain();
+    const o1=ctx.createOscillator(); o1.type="triangle"; o1.frequency.value=f;
+    const o2=ctx.createOscillator(); o2.type="sine"; o2.frequency.value=f*2.001;
+    const h=ctx.createGain(); h.gain.value=0.3; o2.connect(h); h.connect(g);
+    o1.connect(g);
+    const ring=Math.min(dur+0.55,2.1);
+    g.gain.setValueAtTime(0.0001,w);
+    g.gain.exponentialRampToValueAtTime(0.2,w+0.006);
+    g.gain.exponentialRampToValueAtTime(0.0005,w+ring);
+    g.connect(voiceBus);
+    o1.start(w); o2.start(w); o1.stop(w+ring+0.05); o2.stop(w+ring+0.05);
+  }
+  function bass(f,w,dur){
+    const o=ctx.createOscillator(),g=ctx.createGain();
+    o.type="sine"; o.frequency.value=f;
+    g.gain.setValueAtTime(0.0001,w);
+    g.gain.exponentialRampToValueAtTime(0.13,w+0.08);
+    g.gain.exponentialRampToValueAtTime(0.0006,w+dur);
+    o.connect(g); g.connect(master);
+    o.start(w); o.stop(w+dur+0.05);
+  }
+  function sched(){
+    const ahead=ctx.currentTime+0.3;
+    while(loopStartTime+EV[schedIdx].t<ahead){
+      const e=EV[schedIdx], w=loopStartTime+e.t;
+      (e.k==="b"?bass:voice)(e.f,w,e.d);
+      schedIdx++;
+      if(schedIdx>=EV.length){schedIdx=0;loopStartTime+=loopLen;}
+    }
+    timer=setTimeout(sched,70);
+  }
+  function init(){ if(inited)return; ctx=new(window.AudioContext||window.webkitAudioContext)(); build(); graph(); inited=true; }
+  function startPlay(){
+    if(playing||ctx.state!=="running")return;
+    playing=true; hideHint();
+    loopStartTime=ctx.currentTime+0.15; schedIdx=0;
+    master.gain.cancelScheduledValues(ctx.currentTime);
+    master.gain.setValueAtTime(Math.max(0.0001,master.gain.value),ctx.currentTime);
+    master.gain.linearRampToValueAtTime(0.5,ctx.currentTime+1.4);
+    clearTimeout(timer); sched(); paint();
+  }
+  function pause(){
+    playing=false; clearTimeout(timer);
+    if(master){master.gain.cancelScheduledValues(ctx.currentTime);master.gain.setValueAtTime(master.gain.value,ctx.currentTime);master.gain.linearRampToValueAtTime(0,ctx.currentTime+0.4);}
+    paint();
+  }
+  function waitGesture(){
+    if(gestureArmed)return; gestureArmed=true; showHint();
+    const evs=["pointerdown","touchstart","keydown","scroll","click"];
+    const kick=()=>{ evs.forEach(e=>window.removeEventListener(e,kick)); if(!wantOn)return; ctx.resume().then(()=>startPlay()); };
+    evs.forEach(e=>window.addEventListener(e,kick,{once:true,passive:true}));
+  }
+  function arm(){
+    init(); wantOn=true; paint();
+    ctx.resume().then(()=>{ if(ctx.state==="running")startPlay(); else waitGesture(); }).catch(waitGesture);
+    if(ctx.state!=="running") waitGesture();
+  }
+  function toggle(){
+    init();
+    if(playing){ wantOn=false; pause(); }
+    else{ wantOn=true; ctx.resume().then(()=>{ if(ctx.state==="running")startPlay(); else waitGesture(); }); paint(); }
+  }
+  function paint(){
+    const b=document.getElementById("musicBtn"), l=document.getElementById("mlabel");
+    if(!b)return;
+    b.classList.toggle("on",wantOn); b.classList.toggle("off",!wantOn);
+    if(l)l.textContent=wantOn?"音乐 ON":"音乐 OFF";
+  }
+  let hintTimer;
+  function showHint(){ const h=document.getElementById("mhint"); if(h){h.classList.add("show"); clearTimeout(hintTimer); hintTimer=setTimeout(hideHint,6000);} }
+  function hideHint(){ const h=document.getElementById("mhint"); if(h)h.classList.remove("show"); clearTimeout(hintTimer); }
+  return {arm,toggle};
+})();
+
+/* ---------- init ---------- */
+buildStats();render("all");
+document.getElementById("musicBtn").addEventListener("click",()=>Music.toggle());
+Music.arm();
+new IntersectionObserver((es,o)=>{if(es[0].isIntersecting){countUp();o.disconnect();}}).observe(document.getElementById("stats"));
 </script>
 </body>
 </html>
