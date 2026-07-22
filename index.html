@@ -127,6 +127,22 @@
   .toTop.show{opacity:1;pointer-events:auto}
   .toTop:hover{border-color:var(--gold);transform:translateY(-3px)}
 
+  /* ---------- music button ---------- */
+  .musicBtn{position:fixed;left:20px;bottom:24px;z-index:20;display:flex;align-items:center;gap:9px;height:48px;padding:0 16px 0 14px;border-radius:999px;border:1px solid rgba(255,207,64,.4);background:rgba(24,16,38,.9);color:var(--gold);cursor:pointer;backdrop-filter:blur(6px);transition:border-color .3s,transform .3s,box-shadow .3s,color .3s;font-weight:700;font-size:13px;letter-spacing:.05em;font-family:inherit}
+  .musicBtn:hover{border-color:var(--gold);transform:translateY(-3px);box-shadow:0 8px 24px rgba(255,207,64,.28)}
+  .musicBtn .eq{display:flex;align-items:flex-end;gap:2px;height:16px}
+  .musicBtn .eq i{width:3px;height:4px;background:currentColor;border-radius:2px}
+  .musicBtn.on{color:var(--gold);border-color:rgba(255,207,64,.55)}
+  .musicBtn.on .eq i{animation:eqbar 1s ease-in-out infinite}
+  .musicBtn.on .eq i:nth-child(2){animation-delay:.22s}
+  .musicBtn.on .eq i:nth-child(3){animation-delay:.44s}
+  .musicBtn.on .eq i:nth-child(4){animation-delay:.14s}
+  .musicBtn.off{color:var(--muted);border-color:var(--line)}
+  .musicBtn.off .eq i{height:4px}
+  @keyframes eqbar{0%,100%{height:4px}50%{height:16px}}
+  .mhint{position:fixed;left:20px;bottom:82px;z-index:20;max-width:238px;background:linear-gradient(90deg,var(--gold),var(--red));color:#1a0d04;font-size:12.5px;font-weight:700;line-height:1.5;padding:9px 14px;border-radius:12px;box-shadow:0 10px 28px rgba(0,0,0,.45);opacity:0;transform:translateY(8px);transition:.45s;pointer-events:none}
+  .mhint.show{opacity:1;transform:none}
+
   @media (max-width:520px){
     .grid{grid-template-columns:1fr}
     .stat{flex-basis:44%}
@@ -169,6 +185,12 @@
   <p>本页作品清单按公开资料整理，涵盖周星驰参演、导演、编剧、监制的电影与电视剧；豆瓣 / IMDb 评分为整理时的参考数值，可能随时间变动，仅供缅怀与欣赏之用。封面为契合影片气质的艺术化设计卡片。</p>
   <p style="margin-top:18px;color:#6c6486">献给每一个笑过、也哭过的星迷 · 一年一影帝，百年周星驰</p>
 </footer>
+
+<button class="musicBtn on" id="musicBtn" aria-label="背景音乐开关" title="背景音乐 开 / 关">
+  <span class="eq"><i></i><i></i><i></i><i></i></span>
+  <span id="mlabel">音乐 ON</span>
+</button>
+<div class="mhint" id="mhint">♪ 轻触屏幕任意处，聆听星爷的旋律</div>
 
 <button class="toTop" id="toTop" aria-label="回到顶部">↑</button>
 
@@ -332,8 +354,116 @@ const toTop=document.getElementById("toTop");
 addEventListener("scroll",()=>{toTop.classList.toggle("show",scrollY>600);});
 toTop.onclick=()=>scrollTo({top:0,behavior:"smooth"});
 
+/* =========================================================
+   背景音乐 —— 原创怀旧五声音阶主题（Web Audio API 实时演奏）
+   致敬星爷电影的悠远意境，无外部文件、无版权顾虑
+========================================================= */
+const Music=(()=>{
+  let ctx,master,voiceBus,lp,delay,fb,timer,loopStartTime,schedIdx=0,inited=false,playing=false,wantOn=true,gestureArmed=false;
+  const BPM=68, beat=60/BPM;
+  const SEMI={C:0,D:2,E:4,F:5,G:7,A:9,B:11};
+  const NF=n=>{const L=n[0],sharp=n.includes("#")?1:0,oct=+n.slice(-1);const midi=(oct+1)*12+SEMI[L]+sharp;return 440*Math.pow(2,(midi-69)/12);};
+  // 原创旋律（A 小调五声：A C D E G），[音名, 拍数]
+  const MEL=[
+    ["E4",1],["G4",1],["A4",2], ["C5",1],["A4",1],["G4",2],
+    ["A4",1],["C5",1],["D5",2], ["E5",2],["D5",1],["C5",1],
+    ["A4",1],["G4",1],["E4",2], ["G4",1],["A4",1],["C5",2],
+    ["D5",1],["C5",1],["A4",2], ["G4",2],["E4",2],
+    ["E4",1],["D4",1],["E4",2], ["G4",2],["A4",4]
+  ];
+  // 低音铺底，每 4 拍一个和弦根音
+  const BASS=[["A2",4],["C3",4],["G2",4],["E2",4],["A2",4],["F2",4],["G2",4],["A2",4]];
+  let EV=[],loopLen=0;
+  function build(){
+    let t=0; MEL.forEach(([n,b])=>{EV.push({t,f:NF(n),d:b*beat*0.94,k:"m"});t+=b*beat;}); loopLen=t;
+    let tb=0; BASS.forEach(([n,b])=>{EV.push({t:tb,f:NF(n),d:b*beat*0.98,k:"b"});tb+=b*beat;});
+    EV.sort((a,b)=>a.t-b.t);
+  }
+  function graph(){
+    master=ctx.createGain(); master.gain.value=0;
+    lp=ctx.createBiquadFilter(); lp.type="lowpass"; lp.frequency.value=2100; lp.Q.value=.3;
+    voiceBus=ctx.createGain(); voiceBus.gain.value=1;
+    delay=ctx.createDelay(); delay.delayTime.value=0.34; fb=ctx.createGain(); fb.gain.value=0.26;
+    voiceBus.connect(lp); lp.connect(master);
+    lp.connect(delay); delay.connect(fb); fb.connect(delay); delay.connect(master);
+    master.connect(ctx.destination);
+  }
+  function voice(f,w,dur){
+    const o1=ctx.createOscillator(),o2=ctx.createOscillator(),g=ctx.createGain();
+    o1.type="sine"; o2.type="triangle"; o1.detune.value=-5; o2.detune.value=6;
+    o1.frequency.value=f; o2.frequency.value=f;
+    g.gain.setValueAtTime(0.0001,w);
+    g.gain.exponentialRampToValueAtTime(0.16,w+0.04);
+    g.gain.exponentialRampToValueAtTime(0.0006,w+dur);
+    o1.connect(g); o2.connect(g); g.connect(voiceBus);
+    o1.start(w); o2.start(w); o1.stop(w+dur+0.05); o2.stop(w+dur+0.05);
+  }
+  function bass(f,w,dur){
+    const o=ctx.createOscillator(),g=ctx.createGain();
+    o.type="sine"; o.frequency.value=f;
+    g.gain.setValueAtTime(0.0001,w);
+    g.gain.exponentialRampToValueAtTime(0.13,w+0.08);
+    g.gain.exponentialRampToValueAtTime(0.0006,w+dur);
+    o.connect(g); g.connect(master);
+    o.start(w); o.stop(w+dur+0.05);
+  }
+  function sched(){
+    const ahead=ctx.currentTime+0.3;
+    while(loopStartTime+EV[schedIdx].t<ahead){
+      const e=EV[schedIdx], w=loopStartTime+e.t;
+      (e.k==="b"?bass:voice)(e.f,w,e.d);
+      schedIdx++;
+      if(schedIdx>=EV.length){schedIdx=0;loopStartTime+=loopLen;}
+    }
+    timer=setTimeout(sched,70);
+  }
+  function init(){ if(inited)return; ctx=new(window.AudioContext||window.webkitAudioContext)(); build(); graph(); inited=true; }
+  function startPlay(){
+    if(playing||ctx.state!=="running")return;
+    playing=true; hideHint();
+    loopStartTime=ctx.currentTime+0.15; schedIdx=0;
+    master.gain.cancelScheduledValues(ctx.currentTime);
+    master.gain.setValueAtTime(Math.max(0.0001,master.gain.value),ctx.currentTime);
+    master.gain.linearRampToValueAtTime(0.5,ctx.currentTime+1.4);
+    clearTimeout(timer); sched(); paint();
+  }
+  function pause(){
+    playing=false; clearTimeout(timer);
+    if(master){master.gain.cancelScheduledValues(ctx.currentTime);master.gain.setValueAtTime(master.gain.value,ctx.currentTime);master.gain.linearRampToValueAtTime(0,ctx.currentTime+0.4);}
+    paint();
+  }
+  function waitGesture(){
+    if(gestureArmed)return; gestureArmed=true; showHint();
+    const evs=["pointerdown","touchstart","keydown","scroll","click"];
+    const kick=()=>{ evs.forEach(e=>window.removeEventListener(e,kick)); if(!wantOn)return; ctx.resume().then(()=>startPlay()); };
+    evs.forEach(e=>window.addEventListener(e,kick,{once:true,passive:true}));
+  }
+  function arm(){
+    init(); wantOn=true; paint();
+    ctx.resume().then(()=>{ if(ctx.state==="running")startPlay(); else waitGesture(); }).catch(waitGesture);
+    if(ctx.state!=="running") waitGesture();
+  }
+  function toggle(){
+    init();
+    if(playing){ wantOn=false; pause(); }
+    else{ wantOn=true; ctx.resume().then(()=>{ if(ctx.state==="running")startPlay(); else waitGesture(); }); paint(); }
+  }
+  function paint(){
+    const b=document.getElementById("musicBtn"), l=document.getElementById("mlabel");
+    if(!b)return;
+    b.classList.toggle("on",wantOn); b.classList.toggle("off",!wantOn);
+    if(l)l.textContent=wantOn?"音乐 ON":"音乐 OFF";
+  }
+  let hintTimer;
+  function showHint(){ const h=document.getElementById("mhint"); if(h){h.classList.add("show"); clearTimeout(hintTimer); hintTimer=setTimeout(hideHint,6000);} }
+  function hideHint(){ const h=document.getElementById("mhint"); if(h)h.classList.remove("show"); clearTimeout(hintTimer); }
+  return {arm,toggle};
+})();
+
 /* ---------- init ---------- */
 buildStats();render("all");
+document.getElementById("musicBtn").addEventListener("click",()=>Music.toggle());
+Music.arm();
 new IntersectionObserver((es,o)=>{if(es[0].isIntersecting){countUp();o.disconnect();}}).observe(document.getElementById("stats"));
 </script>
 </body>
