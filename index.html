@@ -98,8 +98,9 @@
   .poster .pt{position:relative;z-index:2;font-size:clamp(22px,3vw,30px);font-weight:900;color:#fff;text-shadow:0 3px 18px rgba(0,0,0,.5);line-height:1.1}
   .poster .pyear{position:absolute;top:14px;left:16px;z-index:2;font-size:13px;font-weight:800;letter-spacing:.1em;color:rgba(255,255,255,.9);background:rgba(0,0,0,.28);padding:3px 10px;border-radius:999px;backdrop-filter:blur(3px)}
   .poster .peng{position:relative;z-index:2;margin-top:6px;font-size:12px;letter-spacing:.06em;color:rgba(255,255,255,.85);font-style:italic}
-  .poster .picon{position:absolute;top:46%;left:50%;transform:translate(-50%,-50%);z-index:1;font-size:88px;line-height:1;opacity:.92;filter:drop-shadow(0 8px 20px rgba(0,0,0,.45));pointer-events:none;transition:transform .4s}
-  .card:hover .poster .picon{transform:translate(-50%,-50%) scale(1.08)}
+  .poster .art{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden}
+  .poster .art svg{width:100%;height:100%;display:block;transition:transform .5s}
+  .card:hover .poster .art svg{transform:scale(1.06)}
   .poster .scrim{position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,transparent 42%,rgba(0,0,0,.15) 62%,rgba(0,0,0,.62));pointer-events:none}
   .poster .perf{position:absolute;left:0;right:0;height:12px;z-index:3;background:repeating-linear-gradient(90deg,rgba(6,4,10,.8) 0 7px,transparent 7px 15px);opacity:.4;pointer-events:none}
   .poster .perf.t{top:0}.poster .perf.b{bottom:0}
@@ -280,30 +281,42 @@ function buildStats(){
     `<div class="stat"><div class="num" data-to="${s[0]}">0</div><div class="lbl">${s[1]}</div></div>`).join("");
 }
 
-/* ---------- theme icon per film ---------- */
-function iconFor(f){
+/* ---------- 原创 SVG 封面场景（手绘矢量，按剧情主题） ---------- */
+function sceneFor(f){
   const s=f.t+f.e+f.plot;
-  const map=[
-    [/女足|足球/,"⚽"],
-    [/美人鱼/,"🧜‍♀️"],
-    [/凌凌漆|密探|特工/,"🕶️"],
-    [/赌|千王/,"🃏"],
-    [/食神|牛丸/,"🍜"],
-    [/功夫|精武|武状元|苏乞儿|拳/,"🥋"],
-    [/西游|降魔|伏妖|大话|月光宝盒|大圣/,"🐵"],
-    [/逃学威龙/,"🎒"],
-    [/唐伯虎/,"🖌️"],
-    [/长江七号|七仔/,"👽"],
-    [/审死官|芝麻官|算死草|讼师|状师/,"⚖️"],
-    [/济公|罗汉/,"🙏"],
-    [/回魂|撞鬼|鬼/,"👻"],
-    [/整蛊/,"🎁"],
-    [/喜事|贺岁/,"🧧"],
-    [/喜剧之王/,"🎬"],
-    [/430|穿梭机|盖世豪侠|他来自江湖/,"📺"],
-  ];
-  for(const [re,ic] of map) if(re.test(s)) return ic;
-  return "🎞️";
+  if(/女足|足球/.test(s))return "sport";
+  if(/美人鱼/.test(s))return "ocean";
+  if(/长江七号|七仔|外星/.test(s))return "alien";
+  if(/凌凌漆|密探|特工|逃学威龙|咖喱辣椒|警|龙在天涯/.test(s))return "city";
+  if(/赌|千王/.test(s))return "gamble";
+  if(/食神|牛丸|厨/.test(s))return "food";
+  if(/功夫|精武|武状元|苏乞儿|拳|少林|破坏之王/.test(s))return "kungfu";
+  if(/西游|降魔|伏妖|大话|月光宝盒|大圣|悟空/.test(s))return "west";
+  if(/回魂|撞鬼|鬼/.test(s))return "ghost";
+  if(/审死官|芝麻官|算死草|讼师|状师|唐伯虎|鹿鼎记|济公|罗汉|大内密探/.test(s))return "court";
+  if(/喜事|贺岁|豪门夜宴|群星|情圣|整蛊/.test(s))return "festive";
+  if(/喜剧之王|龙套/.test(s))return "stage";
+  if(/430|穿梭机|盖世豪侠|他来自江湖|电视/.test(s))return "tv";
+  return "cinema";
+}
+const SCENES={
+ sport:`<rect x="0" y="118" width="300" height="102" fill="#2f9e44" opacity=".28"/><ellipse cx="150" cy="215" rx="150" ry="34" fill="#2f9e44" opacity=".3"/><path d="M30,70 Q150,110 270,70" stroke="#fff" stroke-width="2" fill="none" opacity=".4"/><circle cx="150" cy="96" r="34" fill="#f6f6f6"/><polygon points="150,74 163,84 158,100 142,100 137,84" fill="#161616"/><g stroke="#161616" stroke-width="2" fill="none"><path d="M150,62 V74 M116,96 l21,4 M184,96 l-21,4 M133,124 l9,-14 M167,124 l-9,-14"/></g><g fill="#ffcf40"><circle cx="60" cy="55" r="2"/><circle cx="245" cy="50" r="2"/></g>`,
+ ocean:`<circle cx="230" cy="52" r="24" fill="#ffe694" opacity=".9"/><path d="M110,118 q34,-46 60,-8 q-6,26 -28,36 q12,-30 -24,-30 Z" fill="#ffcf40" opacity=".85"/><path d="M0,150 q75,-28 150,0 t150,0 V220 H0 Z" fill="#1d4ed8" opacity=".35"/><path d="M0,176 q75,-24 150,0 t150,0 V220 H0 Z" fill="#0ea5e9" opacity=".4"/><g fill="#fff" opacity=".6"><circle cx="86" cy="128" r="3"/><circle cx="102" cy="150" r="2"/><circle cx="76" cy="162" r="2.5"/></g>`,
+ kungfu:`<circle cx="150" cy="72" r="40" fill="#ffcf40" opacity=".85"/><path d="M0,205 L70,120 L120,178 L175,110 L240,182 L300,132 V220 H0 Z" fill="#101014" opacity=".5"/><circle cx="150" cy="112" r="10" fill="#101014" opacity=".7"/><g stroke="#101014" stroke-width="4" fill="none" opacity=".7" stroke-linecap="round"><path d="M150,122 V162 M150,134 l-24,14 M150,134 l24,14 M150,162 l-16,34 M150,162 l16,34"/></g>`,
+ gamble:`<g transform="rotate(-14 118 118)"><rect x="82" y="70" width="72" height="98" rx="9" fill="#fbfbfb"/><path d="M118,96 q16,10 0,30 q-16,-20 0,-30 Z" fill="#e63946"/></g><g transform="rotate(12 196 122)"><rect x="162" y="80" width="72" height="98" rx="9" fill="#fbfbfb"/><path d="M198,110 q16,14 0,30 q-16,-16 0,-30 Z" fill="#161616"/><rect x="194" y="150" width="8" height="8" fill="#161616"/></g><g transform="rotate(18 150 176)"><rect x="138" y="160" width="30" height="30" rx="5" fill="#e63946"/><g fill="#fff"><circle cx="147" cy="169" r="2.6"/><circle cx="159" cy="181" r="2.6"/><circle cx="153" cy="175" r="2.6"/></g></g>`,
+ food:`<g stroke="#ffcf40" stroke-width="4" fill="none" opacity=".7" stroke-linecap="round"><path d="M122,104 q-10,-20 6,-38"/><path d="M150,98 q-10,-22 6,-40"/><path d="M178,104 q-10,-20 6,-38"/></g><ellipse cx="150" cy="150" rx="74" ry="20" fill="#fafafa"/><path d="M78,150 q72,46 144,0 Z" fill="#e6e6e6"/><ellipse cx="150" cy="150" rx="74" ry="18" fill="#c8c8c8" opacity=".5"/><line x1="196" y1="86" x2="150" y2="150" stroke="#7c2d12" stroke-width="4" stroke-linecap="round"/><line x1="210" y1="92" x2="164" y2="150" stroke="#7c2d12" stroke-width="4" stroke-linecap="round"/>`,
+ court:`<path d="M14,74 Q150,18 286,74 L268,74 Q150,34 32,74 Z" fill="#b91c1c" opacity=".85"/><rect x="30" y="74" width="240" height="14" fill="#7c2d12"/><path d="M22,74 Q150,44 278,74" fill="none" stroke="#ffcf40" stroke-width="3"/><g><line x1="72" y1="90" x2="72" y2="110" stroke="#7c2d12" stroke-width="2"/><ellipse cx="72" cy="126" rx="15" ry="18" fill="#e63946"/><path d="M72,144 v8" stroke="#ffcf40" stroke-width="2"/></g><g><line x1="228" y1="90" x2="228" y2="110" stroke="#7c2d12" stroke-width="2"/><ellipse cx="228" cy="126" rx="15" ry="18" fill="#e63946"/><path d="M228,144 v8" stroke="#ffcf40" stroke-width="2"/></g><rect x="122" y="150" width="56" height="70" rx="4" fill="#7c2d12" opacity=".55"/>`,
+ west:`<circle cx="150" cy="80" r="44" fill="#ffe694" opacity=".9"/><g fill="#fff" opacity=".22"><ellipse cx="72" cy="150" rx="34" ry="12"/><ellipse cx="100" cy="140" rx="24" ry="10"/><ellipse cx="230" cy="160" rx="34" ry="12"/></g><line x1="92" y1="58" x2="212" y2="182" stroke="#ffcf40" stroke-width="6" stroke-linecap="round"/><circle cx="150" cy="118" r="10" fill="#101014" opacity=".7"/><g stroke="#101014" stroke-width="4" fill="none" opacity=".7" stroke-linecap="round"><path d="M150,128 V166 M150,140 l-20,12 M150,140 l20,12 M150,166 l-14,30 M150,166 l14,30"/></g>`,
+ alien:`<g fill="#fff"><circle cx="60" cy="46" r="1.6"/><circle cx="110" cy="30" r="1.4"/><circle cx="245" cy="40" r="1.6"/><circle cx="200" cy="60" r="1.3"/><circle cx="40" cy="90" r="1.3"/></g><ellipse cx="150" cy="92" rx="48" ry="15" fill="#c9a3ff" opacity=".85"/><path d="M124,88 q26,-30 52,0 Z" fill="#8b5cf6" opacity=".9"/><g fill="#ffe694"><circle cx="128" cy="96" r="3"/><circle cx="150" cy="99" r="3"/><circle cx="172" cy="96" r="3"/></g><g transform="translate(150,158)"><ellipse cx="0" cy="0" rx="20" ry="22" fill="#a0f0c0" opacity=".85"/><circle cx="-7" cy="-4" r="4" fill="#101014"/><circle cx="7" cy="-4" r="4" fill="#101014"/></g>`,
+ ghost:`<circle cx="228" cy="52" r="22" fill="#ffe694" opacity=".75"/><path d="M110,92 q40,0 40,40 v52 l-10,-9 -10,9 -10,-9 -10,9 -10,-9 -10,9 V132 q0,-40 40,-40 Z" fill="#fff" opacity=".85"/><g fill="#101014"><circle cx="120" cy="126" r="4.5"/><circle cx="142" cy="126" r="4.5"/></g><path d="M116,142 q10,8 20,0" stroke="#101014" stroke-width="2" fill="none"/>`,
+ city:`<circle cx="238" cy="50" r="18" fill="#ffe694" opacity=".7"/><g fill="#0c0c14" opacity=".55"><rect x="18" y="120" width="30" height="100"/><rect x="58" y="92" width="34" height="128"/><rect x="102" y="140" width="26" height="80"/><rect x="148" y="70" width="40" height="150"/><rect x="200" y="112" width="30" height="108"/><rect x="242" y="96" width="34" height="124"/></g><g fill="#ffcf40" opacity=".8"><rect x="160" y="84" width="5" height="6"/><rect x="172" y="84" width="5" height="6"/><rect x="160" y="98" width="5" height="6"/><rect x="66" y="104" width="5" height="6"/><rect x="78" y="104" width="5" height="6"/><rect x="250" y="110" width="5" height="6"/><rect x="262" y="110" width="5" height="6"/><rect x="28" y="132" width="5" height="6"/></g>`,
+ festive:`<g stroke="#ffcf40" stroke-width="2" opacity=".8"><g transform="translate(80,64)"><line x1="0" y1="-18" x2="0" y2="-8"/><line x1="0" y1="18" x2="0" y2="8"/><line x1="-18" y1="0" x2="-8" y2="0"/><line x1="18" y1="0" x2="8" y2="0"/><line x1="-13" y1="-13" x2="-6" y2="-6"/><line x1="13" y1="13" x2="6" y2="6"/><line x1="-13" y1="13" x2="-6" y2="6"/><line x1="13" y1="-13" x2="6" y2="-6"/></g><g transform="translate(224,58) scale(.8)"><line x1="0" y1="-18" x2="0" y2="-8"/><line x1="0" y1="18" x2="0" y2="8"/><line x1="-18" y1="0" x2="-8" y2="0"/><line x1="18" y1="0" x2="8" y2="0"/></g></g><g><line x1="150" y1="94" x2="150" y2="110" stroke="#7c2d12" stroke-width="2"/><ellipse cx="150" cy="130" rx="20" ry="24" fill="#e63946"/><path d="M150,154 v8" stroke="#ffcf40" stroke-width="3"/><rect x="138" y="122" width="24" height="16" fill="#ffcf40" opacity=".3"/></g>`,
+ stage:`<path d="M150,32 L112,214 L188,214 Z" fill="#ffe694" opacity=".22"/><circle cx="150" cy="30" r="11" fill="#ffcf40"/><ellipse cx="150" cy="210" rx="60" ry="12" fill="#101014" opacity=".5"/><circle cx="150" cy="132" r="12" fill="#101014" opacity=".7"/><g stroke="#101014" stroke-width="4" fill="none" opacity=".7" stroke-linecap="round"><path d="M150,144 V184 M150,156 l-18,14 M150,156 l18,14 M150,184 l-14,26 M150,184 l14,26"/></g><g fill="#ffcf40"><circle cx="60" cy="60" r="2"/><circle cx="240" cy="66" r="2"/><circle cx="210" cy="44" r="1.6"/></g>`,
+ tv:`<rect x="66" y="66" width="168" height="116" rx="14" fill="#0c0c14" opacity=".65"/><rect x="80" y="80" width="126" height="88" rx="8" fill="#1d4ed8" opacity=".45"/><g stroke="#fff" opacity=".15"><line x1="80" y1="92" x2="206" y2="92"/><line x1="80" y1="108" x2="206" y2="108"/><line x1="80" y1="124" x2="206" y2="124"/><line x1="80" y1="140" x2="206" y2="140"/><line x1="80" y1="156" x2="206" y2="156"/></g><circle cx="220" cy="100" r="6" fill="#ffcf40"/><circle cx="220" cy="120" r="6" fill="#e63946"/><circle cx="220" cy="140" r="6" fill="#2f9e44"/><path d="M120,66 L96,40 M150,66 L168,38" stroke="#c9c9c9" stroke-width="3" fill="none"/>`,
+ cinema:`<g opacity=".18" stroke="#fff"><path d="M150,110 L30,40 M150,110 L110,20 M150,110 L190,20 M150,110 L270,40 M150,110 L40,180 M150,110 L260,180"/></g><g transform="translate(150,104)"><polygon points="0,-40 12,-13 40,-13 17,4 26,32 0,15 -26,32 -17,4 -40,-13 -12,-13" fill="#ffcf40" opacity=".9"/></g><g fill="#fff" opacity=".5"><circle cx="60" cy="60" r="2"/><circle cx="245" cy="52" r="2"/><circle cx="215" cy="150" r="1.8"/><circle cx="70" cy="150" r="1.8"/></g>`
+};
+function buildArt(f){
+  return `<svg viewBox="0 0 300 220" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">${SCENES[sceneFor(f)]||SCENES.cinema}</svg>`;
 }
 
 /* ---------- render films ---------- */
@@ -330,11 +343,10 @@ function render(filter){
       <div class="grid">
         ${byYear[y].map(f=>{
           const p=pal(f.t);
-          const ic=iconFor(f);
           const roles=f.roles.map(r=>`<span class="rtag ${ROLE_META[r][0]}">${ROLE_META[r][1]}</span>`).join("");
           return `<article class="card" style="--pa:${p[0]};--pb:${p[1]}">
             <div class="poster">
-              <div class="picon">${ic}</div>
+              <div class="art">${buildArt(f)}</div>
               <div class="scrim"></div>
               <div class="perf t"></div><div class="perf b"></div>
               <div class="pyear">${f.y}</div>
